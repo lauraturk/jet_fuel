@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name = "viewport" content = "width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel = "stylesheet" href = "style.css" type = "text/css"/>
+    <title>Jet Fuel</title>
+  </head>
+  <body>
+    <h1>Jet Fuel</h1>
+    <h2>URL Shortener: Get yer URLs Shortened Here</h2>
+    <section class = "folder-select-container">
+      <form>
+        <input id = "folder-select" type = "text" value = "" list = "folders"/>
+        <datalist id = "folders">
+          <option value = "Folder 1"/>
+          <option value = "Folder 2"/>
+        </datalist>
+      </form>
+    </section>
+    <section class = "folder-content">
+      <form>
+        <label>Sort by Popularity</label>
+        <input type = "radio" id = "popularity" name = "sort" value = "popularity"/>
+        <label>Sort by Recency</label>
+        <input type = "radio" id = "recent" name = "sort" value = "recent"/>
+      </form>
+    </section>
+    <section class = "url-shortening">
+      <form>
+        <input id = "title" type = "text"/>
+        <input id = "url" type = "text"/>
+        <input id = "submit-url" type = "submit"/>
+      </form>
+    </section>
+    <section class = "confirmation">
+
+    </section>
+    <script type = "text/javascript" src = "index.js"></script>
+  </body>
+</html>
