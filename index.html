@@ -10,10 +10,10 @@
     <h1>Jet Fuel</h1>
     <h2>URL Shortener: Get yer URLs Shortened Here</h2>
     <section class = "folder-select-container">
-      <form>
-        <input id = "folder-select" type = "text" value = "" list = "folders"/>
-        <datalist id = "folders">
-          <option value = "Folder 1"/>
+      <form id = "folder-form">
+        <input id = "folder-select" class = "target" type = "text" list = "folders"/>
+        <datalist id = "folders" class = "target">
+          <option value = "Folder 1" selected="selected"/>
           <option value = "Folder 2"/>
         </datalist>
       </form>
@@ -25,6 +25,7 @@
         <label>Sort by Recency</label>
         <input type = "radio" id = "recent" name = "sort" value = "recent"/>
       </form>
+      <div class = "folder-title"></div>
     </section>
     <section class = "url-shortening">
       <form>
@@ -36,6 +37,7 @@
     <section class = "confirmation">
       test
     </section>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type = "text/javascript" src = "index.js"></script>
   </body>
 </html>
