@@ -3,3 +3,5 @@
 
 ### Project Specs
 [Gist](http://frontend.turing.io/projects/jet-fuel.html) 
+
+[![Stories in Ready](https://badge.waffle.io/lauraturk/jet_fuel.png?label=ready&title=Ready)](http://waffle.io/lauraturk/jet_fuel)
