@@ -11,7 +11,8 @@
     <h2>URL Shortener: Get yer URLs Shortened Here</h2>
     <section class = "folder-select-container">
       <form id = "folder-form">
-        <input id = "folder-select" class = "target" type = "text" list = "folders"/>
+        <label>Select a Folder, or Create a New One</label>
+        <input id = "folder-select" class = "target" type = "text" list = "folders" placeholder = "Choose a Folder"/>
         <datalist id = "folders" class = "target">
           <option value = "Folder 1" selected="selected"/>
           <option value = "Folder 2"/>
@@ -20,22 +21,26 @@
     </section>
     <section class = "folder-content">
       <form>
-        <label>Sort by Popularity</label>
+        <div class = "folder-title"></div>
+        <h4>Sort URLs</h4>
+        <label>By Popularity</label>
         <input type = "radio" id = "popularity" name = "sort" value = "popularity"/>
-        <label>Sort by Recency</label>
+        <label>By Recents</label>
         <input type = "radio" id = "recent" name = "sort" value = "recent"/>
       </form>
-      <div class = "folder-title"></div>
     </section>
     <section class = "url-shortening">
       <form>
-        <input id = "title" type = "text"/>
-        <input id = "url" type = "text"/>
-        <input id = "submit-url" type = "submit"/>
+        <div class = "url-inputs">
+          <label>Enter Site Title</label>
+          <input id = "title" type = "text" placeholder = "Website Title"/>
+          <label>Enter URL</label>
+          <input id = "url" type = "text" placeholder ="Website URL"/>
+          <input id = "submit-url" type = "submit" disabled/>
+        </div>
       </form>
     </section>
     <section class = "confirmation">
-      test
     </section>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type = "text/javascript" src = "index.js"></script>
