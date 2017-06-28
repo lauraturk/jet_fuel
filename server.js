@@ -106,7 +106,7 @@ app.post('/api/v1/folders', (request, response) => {
       })
     }
   }
-  
+
   ///// code to check if multiple similarly named folders.
   // database('folders').where('folder_name', data.folder_name).select()
   //   .then((folder_name) => {
@@ -132,8 +132,18 @@ app.post('/api/v1/folders', (request, response) => {
 })
 
 
-
-
+//app.get('/:shortened_url', (request, response) =>{
+  //database('urls').where('shortened_url' request.params.shortened_url).select()
+    //.then((short_url) =>{
+      //response.goto(original_url)
+      // window.location.href = 'your link'
+      //res.redirect('your/404/path.html');
+    //})
+    //.catch((error) =>{
+      //response.status(500).json({error})
+    //})
+  //})
+//})
 
 
 app.use(express.static('public'))
