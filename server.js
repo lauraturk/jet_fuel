@@ -92,9 +92,45 @@ app.get('/api/v1/urls/:id', (request, response) => {
     })
 })
 
+const createUrl = (url, folderId) =>{
+  return database('urls').insert({original_url: url.original_url, folder_id: folderId, title: url.title}, 'id')
+}
+
 app.post('/api/v1/folders', (request, response) => {
+  const data = request.body;
+
+  for(let requiredParameter of ['folder_name', 'title', 'original_url']){
+    if(!data[requiredParameter]){
+      return response.status(422).json({
+        error: `Expected format requires a Folder Name, a URL Title, and a URL. You are missing a ${requiredParameter} property`
+      })
+    }
+  }
   
+  ///// code to check if multiple similarly named folders.
+  // database('folders').where('folder_name', data.folder_name).select()
+  //   .then((folder_name) => {
+  //     return response.status(409).json({
+  //       error: `The Folder called ${folder_name} already exists. Please try a different folder name.`
+  //     })
+  //   })
+
+  database('folders').insert({folder_name: data.folder_name}, 'id')
+    .then((folderId) => {
+      createUrl(data, folderId[0])
+        .then((urlId) => {
+          response.status(201).json({id: urlId[0]})
+        })
+        .catch((error) => {
+          response.status(500).json({ error })
+        })
+      response.status(201).json({id: folderId[0]})
+    })
+    .catch(error => {
+      response.status(500).json({ error })
+    })
 })
+
 
 
 
