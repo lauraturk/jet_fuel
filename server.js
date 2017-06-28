@@ -2,77 +2,103 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 
+const environment = process.env.NODE_ENV || 'development'
+const configuration = require('./knexfile')[environment]
+const database = require('knex')(configuration)
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set('port', process.env.PORT || 3000)
 app.locals.title = 'Jet Fuel'
 
-app.locals.folders = [{
-  folder: 'cool links',
-  id: '1'
-}]
-
-app.locals.urls = [{
-  title: 'title here',
-  id: '1',
-  folder_id: '1',
-  original_url: 'poop.com',
-  shortened_url: 'p.com'
-},
-{
-  title: 'title here',
-  id: '2',
-  folder_id: '1',
-  original_url: 'poop.com',
-  shortened_url: 'p.com'
-}]
-
 app.get('/api/v1/folders', (request, response) => {
-  // const folders = response.body
-  response.send(app.locals.folders)
-})
-
-app.get('/api/v1/urls/:folder_id', (request, response) => {
-  // const folders = response.body
-  response.send(app.locals.urls)
-})
-
-app.get('/api/v1/urls/:id', (request, response) => {
-  const { id } =request.params
-  const url = app.locals.urls[id]
-
-  if(!url) {
-    return response.sendStatus(404)
-  }
-
-  response.status(200).json({ id, url })
+  database('folders').select()
+    .then((folders) => {
+      if(folders.length){
+        response.status(200).json(folders)
+      } else {
+        response.status(404).json({
+          error: 'No Folders Found'
+        })
+      }
+    })
+    .catch((error) => {
+      response.status(500).json({error})
+    })
 })
 
 app.get('/api/v1/folders/:id', (request, response) => {
-  const { id } = request.params
-  const folder = app.locals.folders[id]
+  database('folders').where('id', request.params.id).select()
+    .then((folders) => {
+      if(folders.length){
+        response.status(200).json(folders)
+      } else {
+        response.status(404).json({
+          error: 'No Folders Found'
+        })
+      }
+    })
+    .catch((error) => {
+      response.status(500).json({error})
+    })
+})
 
-  if(!folder) {
-    return response.sendStatus(404)
-  }
-  response.status(200).json({ id, folder })
+app.get('/api/v1/folders/:id/urls', (request, response) => {
+  database('urls').where('folder_id', request.params.id).select()
+    .then((urls) => {
+      if(urls.length){
+        response.status(200).json(urls)
+      } else {
+        response.status(404).json({
+          error: 'No Urls Found'
+        })
+      }
+    })
+    .catch((error) => {
+      response.status(500).json({error})
+    })
+})
+
+app.get('/api/v1/urls', (request, response) => {
+  database('urls').select()
+    .then((urls) => {
+      if(urls.length){
+        response.status(200).json(urls)
+      } else {
+        response.status(404).json({
+          error: 'No Urls Found'
+        })
+      }
+    })
+    .catch((error) => {
+      response.status(500).json({error})
+    })
+})
+
+app.get('/api/v1/urls/:id', (request, response) => {
+  database('urls').where('id', request.params.id).select()
+    .then((urls) => {
+      if(urls.length){
+        response.status(200).json(urls[0])
+      } else {
+        response.status(404).json({
+          error: 'No Urls Found'
+        })
+      }
+    })
+    .catch((error) => {
+      response.status(500).json({error})
+    })
 })
 
 app.post('/api/v1/folders', (request, response) => {
-  const { folder, title, url } = request.body
-  const id = Date.now()
-
-  if(!folder) {
-    return response.status(422).send({
-      error: 'No Folder Selected'
-    })
-  }
-
-  app.locals.folders[id] = folder
-  response.status(201).json({ id, folder, title, url })
-
+  
 })
+
+
+
+
 
 app.use(express.static('public'))
 
