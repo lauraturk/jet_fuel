@@ -4,10 +4,13 @@ module.exports = {
 
   development: {
     client: 'pg',
-    connection: 'postgres://localhost/folders',
+    connection: 'postgres://localhost/jet_fuel',
     useNullAsDefault: true,
     migrations: {
       directory: './db/migrations'
+    },
+    seeds: {
+      directory: './db/seed/dev'
     }
   }
 
