@@ -111,13 +111,13 @@ app.post('/api/v1/folders', (request, response) => {
     }
   }
 
-  ///// code to check if multiple similarly named folders.
-  // database('folders').where('folder_name', data.folder_name).select()
-  //   .then((folder_name) => {
-  //     return response.status(409).json({
-  //       error: `The Folder called ${folder_name} already exists. Please try a different folder name.`
-  //     })
-  //   })
+  database('folders').where('folder_name', data.folder_name).select('id')
+    .then((folderId) =>{
+      createUrl(data, folderId[0]))
+      .then((urlId) => {
+        return response.status(201).json({id: urlId[0]})
+      })
+    })
 
   database('folders').insert({folder_name: data.folder_name}, 'id')
     .then((folderId) => {
