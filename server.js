@@ -6,6 +6,8 @@ const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
+const encodeUrl = require('./shortener')
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -92,8 +94,33 @@ app.get('/api/v1/urls/:id', (request, response) => {
     })
 })
 
+// app.get('/api/v1/urls/:shortened_url', (request, response) => {
+//   database('urls').where('shortened_url', request.params.shortened_url).select()
+//     .then((urls) => {
+//       if(urls.length){
+//         response.status(200).json(urls[0])
+//       } else {
+//         response.status(404).json({
+//           error: 'No Urls Found'
+//         })
+//       }
+//     })
+//     .catch((error) => {
+//       response.status(500).json({error})
+//     })
+// })
+
 const createUrl = (url, folderId) =>{
-  return database('urls').insert({original_url: url.original_url, folder_id: folderId, title: url.title}, 'id')
+  console.log(url, 'in create url')
+  return database('urls').insert({original_url: url.original_url,
+                                  folder_id: folderId,
+                                  title: url.title}, 'id')
+}
+
+const createShortUrl = (id) => {
+  const integerId = id[0]
+  const shortenedUrl = encodeUrl(id)
+  return database('urls').where('id', '=', integerId).update({shortened_url: `${shortenedUrl}`}, 'shortened_url')
 }
 
 app.post('/api/v1/folders', (request, response) => {
@@ -102,11 +129,12 @@ app.post('/api/v1/folders', (request, response) => {
   for(let requiredParameter of ['folder_name', 'title', 'original_url']){
     if(!data[requiredParameter]){
       return response.status(422).json({
-        error: `Expected format requires a Folder Name, a URL Title, and a URL. You are missing a ${requiredParameter} property`
+        error: `Expected format requires a Folder Name, a URL Title, and a URL.
+        You are missing a ${requiredParameter} property`
       })
     }
   }
-  
+
   ///// code to check if multiple similarly named folders.
   // database('folders').where('folder_name', data.folder_name).select()
   //   .then((folder_name) => {
@@ -119,22 +147,24 @@ app.post('/api/v1/folders', (request, response) => {
     .then((folderId) => {
       createUrl(data, folderId[0])
         .then((urlId) => {
-          response.status(201).json({id: urlId[0]})
+          console.log(urlId, 'returned id from url')
+          createShortUrl(urlId)
+            .then((shortened_url) => {
+              response.status(201).json({ shortened_url })
+            })
+            .catch((error) => {
+              response.status(500).json({ error })
+            })
         })
-        .catch((error) => {
-          response.status(500).json({ error })
-        })
-      response.status(201).json({id: folderId[0]})
+      //   .catch((error) => {
+      //     response.status(500).json({ error })
+      //   })
+      // response.status(201).json({id: folderId[0]})
     })
     .catch(error => {
       response.status(500).json({ error })
     })
 })
-
-
-
-
-
 
 app.use(express.static('public'))
 
