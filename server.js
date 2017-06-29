@@ -104,6 +104,10 @@ app.post('/api/v1/folders', (request, response) => {
       return response.status(422).json({
         error: `Expected format requires a Folder Name, a URL Title, and a URL. You are missing a ${requiredParameter} property`
       })
+    } else if (data.folder_name.includes(" ")) {
+      return response.status(422).json({
+        error: `Expected format requires a Folder Name, a URL Title, and a URL. The Folder Name attribute must be one word, without spaces. `
+      })
     }
   }
 
@@ -137,7 +141,7 @@ app.post('/api/v1/folders', (request, response) => {
     //.then((short_url) =>{
       //response.goto(original_url)
       // window.location.href = 'your link'
-      //res.redirect('your/404/path.html');
+      //res.redirect(309, 'your/404/path.html');
     //})
     //.catch((error) =>{
       //response.status(500).json({error})
