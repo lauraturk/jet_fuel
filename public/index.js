@@ -75,9 +75,13 @@ folderForm
       })
       .catch((error) => console.log(error))
     $('.folder-content').addClass('active')
+    $('.url-inputs').addClass('active')
+    $('#folder-sort').removeClass('sort-remove').addClass('sort-active')
   } else if (!matchFolder) {
     $('.folder-title').replaceWith(`<div class = "folder-title"><p>Create New Folder:</p><h2>${e.target.value}</h2></div>`)
     $('.folder-content').addClass('active')
+    $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
+    $('.url-inputs').addClass('active')
   }
 })
 .on('submit', (e) => {
@@ -115,13 +119,13 @@ const sortUrls = (sortType) => {
 
 const urlSorter = () => {
   urlsArray.forEach((url) => {
-    $('.url-list').append(`<p>Title:${url.title}, ShortLink: ${url.original_url}</p>`)
+    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.original_url}</p></div>`)
   })
 }
 
 const urlList = (urls) =>{
   urls.forEach((url) =>{
-    $('.url-list').append(`<p>Title:${url.title}, ShortLink: ${url.original_url}</p>`)
+    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.original_url}</p></div>`)
   })
 }
 
