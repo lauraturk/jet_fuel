@@ -104,20 +104,16 @@ app.post('/api/v1/folders', (request, response) => {
       return response.status(422).json({
         error: `Expected format requires a Folder Name, a URL Title, and a URL. You are missing a ${requiredParameter} property`
       })
-    } else if (data.folder_name.includes(" ")) {
-      return response.status(422).json({
-        error: `Expected format requires a Folder Name, a URL Title, and a URL. The Folder Name attribute must be one word, without spaces. `
-      })
     }
   }
 
-  database('folders').where('folder_name', data.folder_name).select('id')
-    .then((folderId) =>{
-      createUrl(data, folderId[0]))
-      .then((urlId) => {
-        return response.status(201).json({id: urlId[0]})
-      })
-    })
+  // database('folders').where('folder_name', data.folder_name).select('id')
+  //   .then((folderId) =>{
+  //     createUrl(data, folderId[0])
+  //     .then((urlId) => {
+  //       return response.status(201).json({id: urlId[0]})
+  //     })
+  //   })
 
   database('folders').insert({folder_name: data.folder_name}, 'id')
     .then((folderId) => {

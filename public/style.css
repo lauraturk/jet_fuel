@@ -54,6 +54,10 @@ input::placeholder{
   display: block;
 }
 
+.inactive {
+  display: none;
+}
+
 .url-shortening{
   margin-top: 20px;
 }
@@ -83,6 +87,14 @@ input::placeholder{
   height: 35px;
   font-size: 20px;
   text-align: center;
+}
+
+.sort-buttons-remove{
+  display: none;
+}
+
+.sort-buttons-active{
+  display: block;
 }
 
 #title, #url{
