@@ -94,11 +94,39 @@ app.get('/api/v1/urls/:id', (request, response) => {
     })
 })
 
+app.get('/api/:short_url', (request, response) =>{
+  database('urls').where('shortened_url', request.params.short_url).select()
+    .then((data) => {
+      if(data.length){
+        console.log(data[0])
+        response.redirect(301, `${data[0].original_url}`)
+      } else {
+        response.status(404).json({
+          error: 'Page not found'
+        })
+      }
+    })
+    .catch((error) =>{
+      response.status(500).json({error})
+    })
+})
+
 
 
 const createUrl = (url, folderId) =>{
-  console.log(url, 'in create url')
-  return database('urls').insert({original_url: url.original_url,
+  let modifiedUrl
+
+  if(!url.original_url.includes('http://') && !url.original_url.includes('www.')){
+    modifiedUrl = 'http://www.'.concat(url.original_url)
+    console.log(modifiedUrl)
+  } else if (!url.original_url.includes('http://')) {
+    modifiedUrl = 'http://'.concat(url.original_url)
+    console.log(modifiedUrl)
+  } else {
+    modifiedUrl = url.original_url
+  }
+
+  return database('urls').insert({original_url: modifiedUrl,
                                   folder_id: folderId,
                                   title: url.title}, 'id')
 }
@@ -133,7 +161,6 @@ app.post('/api/v1/folders', (request, response) => {
     .then((folderId) => {
       createUrl(data, folderId[0])
         .then((urlId) => {
-          console.log(urlId, 'returned id from url')
           createShortUrl(urlId)
             .then((shortened_url) => {
               response.status(201).json({ shortened_url })
@@ -152,18 +179,7 @@ app.post('/api/v1/folders', (request, response) => {
     })
 })
 
-//app.get('/:shortened_url', (request, response) =>{
-  //database('urls').where('shortened_url' request.params.shortened_url).select()
-    //.then((short_url) =>{
-      //response.goto(original_url)
-      // window.location.href = 'your link'
-      //res.redirect(301, 'your/path.html');
-    //})
-    //.catch((error) =>{
-      //response.status(500).json({error})
-    //})
-  //})
-//})
+
 
 app.use(express.static('public'))
 
