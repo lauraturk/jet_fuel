@@ -97,6 +97,7 @@ app.get('/api/v1/urls/:id', (request, response) => {
 app.get('/api/:short_url', (request, response) =>{
   database('urls').where('shortened_url', request.params.short_url).select()
     .then((data) => {
+      database('')
       if(data.length){
         console.log(data[0])
         response.redirect(301, `${data[0].original_url}`)
@@ -111,12 +112,15 @@ app.get('/api/:short_url', (request, response) =>{
     })
 })
 
-const addFoldersAndUrls = (data) => {
+const addFoldersAndUrls = (data, response) => {
   return database('folders').insert({folder_name: data.folder_name}, 'id')
   .then((folderId) => {
     createUrl(data, folderId[0])
       .then((urlId) => {
         createShortUrl(urlId)
+        .then((urls) =>{
+          response.status(201).json(urls)
+        })
       })
   })
 }
@@ -156,14 +160,13 @@ app.post('/api/v1/folders', (request, response) => {
       })
     }
   }
-
   database('folders').select()
     .then((folders) => {
       let match = folders.find((folder) =>{
         return folder.folder_name === data.folder_name;
       })
       if (!match) {
-        addFoldersAndUrls(data)
+        addFoldersAndUrls(data, response)
           .then((urlData) => {
             response.status(201).json(urlData)
           })

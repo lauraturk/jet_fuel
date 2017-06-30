@@ -93,6 +93,7 @@ dataSubmit.click((e)=>{
 
   addUrls(folder, url, title)
     .then(() =>{
+
       let matchFolder = foldersArray.find((arrFolder) =>{
         return arrFolder.folder_name.toString() === folder.trim()
       })
