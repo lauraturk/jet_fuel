@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const knex = require('knex')
 
 const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
@@ -54,7 +55,6 @@ app.get('/api/v1/folders/:id', (request, response) => {
 addUrl = (urlArray) => {
   const keys = Object.keys(urlArray)
   return keys.map(url => {
-    console.log(urlArray[url], 'in urlArray map')
   return Object.assign({}, urlArray[url], {urlAddOn: jet_fuel})
   })
 }
@@ -110,10 +110,11 @@ app.get('/api/v1/urls/:id', (request, response) => {
 })
 
 app.get('/api/:short_url', (request, response) =>{
-  database('urls').where('shortened_url', request.params.short_url).select()
+  const { short_url } = request.params
+  database('urls').where('shortened_url', '=', short_url).increment('popularity', 1)
+    .then(() => database('urls').where('shortened_url', short_url).select())
     .then((data) => {
       if(data.length){
-        // console.log(data[0])
         response.redirect(301, `${data[0].original_url}`)
       } else {
         response.status(404).json({
@@ -139,10 +140,10 @@ const addFoldersAndUrls = (data) => {
 const createUrl = (url, folderId) =>{
   let modifiedUrl
 
-  if(!url.original_url.includes('http://') && !url.original_url.includes('www.')){
+  if(!url.original_url.includes('http') && !url.original_url.includes('www.')){
     modifiedUrl = 'http://www.'.concat(url.original_url)
     // console.log(modifiedUrl)
-  } else if (!url.original_url.includes('http://')) {
+  } else if (!url.original_url.includes('http')) {
     modifiedUrl = 'http://'.concat(url.original_url)
     // console.log(modifiedUrl)
   } else {
@@ -151,7 +152,8 @@ const createUrl = (url, folderId) =>{
 
   return database('urls').insert({original_url: modifiedUrl,
                                   folder_id: folderId,
-                                  title: url.title}, 'id')
+                                  title: url.title,
+                                  popularity: 0}, 'id')
 }
 
 const createShortUrl = (id) => {

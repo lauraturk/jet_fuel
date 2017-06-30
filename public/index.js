@@ -1,6 +1,6 @@
 
-let foldersArray
-let urlsArray
+let foldersArray = []
+let urlsArray = []
 const folderForm = $('#folder-form')
 const folderSelect = $('#folder-select')
 const dataSubmit = $('#submit-url')
@@ -108,8 +108,9 @@ dataSubmit.click((e)=>{
       if (matchFolder){
         getUrlsByFolder(matchFolder.id)
         .then((urls) =>{
-          const urlAddOn = urls[urls.length-1].urlAddOn
-          const shortUrl = urls[urls.length-1].shortened_url
+          console.log(urls, 'in matchFolder line 112')
+          let urlAddOn = urls[urls.length-1].urlAddOn
+          let shortUrl = urls[urls.length-1].shortened_url
           $('.url-list').append(`<div class= 'appended-url'>
                                   <div>
                                     <h4>Title: </h4>
@@ -160,6 +161,9 @@ const urlSorter = () => {
 
 const urlList = (urls) =>{
   urls.forEach((url) =>{
+    let urlAddOn = url.urlAddOn
+    let shortUrl = url.shortened_url
+
     $('.url-list').append(`<div class= 'appended-url'>
                             <div>
                               <h4>Title: </h4>
@@ -167,8 +171,19 @@ const urlList = (urls) =>{
                             </div>
                             <div>
                               <h4>ShortLink: </h4>
-                              <p>${url.shortened_url}</p>
+                              <a href='${urlAddOn}/${shortUrl}'>${urlAddOn}/${shortUrl}</a>
                             </div>`)
+
+
+    // $('.url-list').append(`<div class= 'appended-url'>
+    //                         <div>
+    //                           <h4>Title: </h4>
+    //                           <p>${url.title}</p>
+    //                         </div>
+    //                         <div>
+    //                           <h4>ShortLink: </h4>
+    //                           <p>${url.shortened_url}</p>
+    //                         </div>`)
   })
 }
 

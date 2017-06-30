@@ -14,6 +14,7 @@ exports.seed = (knex, Promise) => {
             shortened_url: 'www.idk.com',
             folder_id: folder[0],
             title: 'I Dont Know What to do with my life',
+            popularity: 0
           })
         })
         .then(() => console.log('Seeding Complete'))
