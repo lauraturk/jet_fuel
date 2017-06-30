@@ -133,31 +133,31 @@ $('#url, #title, #folder-select').on('keyup', () =>{
 folderSorter
 .on('change', (e) => {
   e.preventDefault()
-  e.target.value === 'popularity' ? sortUrls('popularity') : sortUrls('created_at')
+  sortUrls(e.target.value)
 })
 
 const sortUrls = (sortType) => {
   let urls = urlsArray
   let sortedUrls = urls.sort((a, b) => {
-    return a[sortType] - b[sortType]
+    return  b[sortType] - a[sortType]
   })
   removeUrls()
-  urlSorter(sortedUrls)
+  urlList(sortedUrls)
 }
 
-const urlSorter = () => {
-  urlsArray.forEach((url) => {
-    $('.url-list').append(`<div class= 'appended-url'>
-                            <div>
-                              <h4>Title: </h4>
-                              <p>${url.title}</p>
-                            </div>
-                            <div>
-                              <h4>ShortLink: </h4>
-                              <p>${url.shortened_url}</p>
-                            </div>`)
-  })
-}
+// const urlSorter = () => {
+//   urlsArray.forEach((url) => {
+//     $('.url-list').append(`<div class= 'appended-url'>
+//                             <div>
+//                               <h4>Title: </h4>
+//                               <p>${url.title}</p>
+//                             </div>
+//                             <div>
+//                               <h4>ShortLink: </h4>
+//                               <p>${url.shortened_url}</p>
+//                             </div>`)
+//   })
+// }
 
 const urlList = (urls) =>{
   urls.forEach((url) =>{

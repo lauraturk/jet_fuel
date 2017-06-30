@@ -115,9 +115,9 @@ app.get('/api/:short_url', (request, response) =>{
     .then(() => database('urls').where('shortened_url', short_url).select())
     .then((data) => {
       if(data.length){
-        response.redirect(301, `${data[0].original_url}`)
+        return response.redirect(301, `${data[0].original_url}`)
       } else {
-        response.status(404).json({
+        return response.status(404).json({
           error: 'Page not found'
         })
       }
