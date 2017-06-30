@@ -109,10 +109,25 @@ app.get('/api/v1/urls/:id', (request, response) => {
     })
 })
 
-app.get('/api/:short_url', (request, response) =>{
-  const { short_url } = request.params
-  database('urls').where('shortened_url', '=', short_url).increment('popularity', 1)
-    .then(() => database('urls').where('shortened_url', short_url).select())
+// const incrementUrl = (data) => {
+//   console.log(data)
+//   // const { id } = data[0].id
+//   // app.get('/api/')
+// }
+
+
+app.post('/api/v1/urls/:id', (req, res) => {
+  const { id } = req.params
+  database('urls').where('id', id).increment('popularity', 1)
+  .then((data) => console.log(data))
+  .catch((error) => console.log(error))
+})
+
+
+const redirectUrl = (req, res) => {
+  console.log('here? redirectme', req);
+  const { short_url } = req.params
+  return database('urls').where('shortened_url', short_url).select()
     .then((data) => {
       if(data.length){
         return response.redirect(301, `${data[0].original_url}`)
@@ -122,6 +137,25 @@ app.get('/api/:short_url', (request, response) =>{
         })
       }
     })
+}
+
+app.get('/api/:short_url', (request, response) =>{
+  // const { short_url } = request.params
+  redirectUrl(request, response)
+  // increasePopularity(request, response)
+  // return database('urls').where('shortened_url', '=', short_url).select()
+  // // .then(() => database('urls').where('shortened_url', short_url).increment('popularity', 1))
+  //   .then((data) => {
+  //     if(data.length){
+  //       console.log('im here', data)
+  //       // incrementUrl(data)
+  //       return response.redirect(301, `${data[0].original_url}`)
+  //     } else {
+  //       return response.status(404).json({
+  //         error: 'Page not found'
+  //       })
+  //     }
+  //   })
     .catch((error) =>{
       response.status(500).json({error})
     })
@@ -130,9 +164,9 @@ app.get('/api/:short_url', (request, response) =>{
 const addFoldersAndUrls = (data) => {
   return database('folders').insert({folder_name: data.folder_name}, 'id')
   .then((folderId) => {
-    createUrl(data, folderId[0])
+    return createUrl(data, folderId[0])
       .then((urlId) => {
-        createShortUrl(urlId)
+        return createShortUrl(urlId)
       })
   })
 }

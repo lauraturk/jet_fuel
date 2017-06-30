@@ -5,6 +5,7 @@ const folderForm = $('#folder-form')
 const folderSelect = $('#folder-select')
 const dataSubmit = $('#submit-url')
 const folderSorter = $('#folder-sort')
+const shortUrl = $('.short-url')
 // const jetfuel = process.env.PORT
 
 $(document).ready(() =>{
@@ -53,6 +54,12 @@ const addUrls = (folder, url, urlTitle) =>{
     .then((response) => console.log(response))
     .catch(error => console.log(error))
 }
+
+
+shortUrl
+.on('click', (e) => {
+  // alert(e.target.value)
+})
 
 folderForm
 .on('change', (e) => {
@@ -118,7 +125,7 @@ dataSubmit.click((e)=>{
                                   </div>
                                   <div>
                                     <h4>ShortLink: </h4>
-                                    <a href='${urlAddOn}/${shortUrl}'>${urlAddOn}/${shortUrl}</a>
+                                    <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}/${shortUrl}</a>
                                   </div>`)
         })
         .catch((error) => console.log(error))
@@ -171,7 +178,7 @@ const urlList = (urls) =>{
                             </div>
                             <div>
                               <h4>ShortLink: </h4>
-                              <a href='${urlAddOn}/${shortUrl}'>${urlAddOn}/${shortUrl}</a>
+                              <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}/${shortUrl}</a>
                             </div>`)
 
 
