@@ -8,7 +8,7 @@ const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
 // const process.env.DOMAIN = 'http://localhost:3000/api'
-const host = process.env.DOMAIN || 'http://localhost:3000/'
+const host = process.env.DOMAIN || 'http://localhost:3000/api'
 
 const encodeUrl = require('./shortener')
 
@@ -53,12 +53,12 @@ app.get('/api/v1/folders/:id', (request, response) => {
     })
 })
 
-addUrl = (urlArray) => {
-  const keys = Object.keys(urlArray)
-  return keys.map(url => {
-  return Object.assign({}, urlArray[url], {urlAddOn: host})
-  })
-}
+// addUrl = (urlArray) => {
+//   const keys = Object.keys(urlArray)
+//   return keys.map(url => {
+//   return Object.assign({}, urlArray[url], {urlAddOn: host})
+//   })
+// }
 
 app.get('/api/v1/folders/:id/urls', (request, response) => {
   database('urls').where('folder_id', request.params.id).select()
@@ -66,7 +66,7 @@ app.get('/api/v1/folders/:id/urls', (request, response) => {
       if(urls.length){
         // console.log(Object.keys(urls))
         // console.log(addUrl(urls), 'before json')
-        response.status(200).send(addUrl(urls))
+        response.status(200).json(urls)
       } else {
         response.status(404).json({
           error: 'No Urls Found'
@@ -130,11 +130,11 @@ const redirectUrl = (req, res) => {
   const { short_url } = req.params
   return database('urls').where('shortened_url', short_url).select()
     .then((data) => {
-      database('')
+      // database('')
       if(data.length){
-        return response.redirect(301, `${data[0].original_url}`)
+        return res.redirect(301, `${data[0].original_url}`)
       } else {
-        return response.status(404).json({
+        return res.status(404).json({
           error: 'Page not found'
         })
       }
@@ -142,10 +142,11 @@ const redirectUrl = (req, res) => {
 }
 
 app.get('/:short_url', (request, response) =>{
+  // console.log( request );
   // const { short_url } = request.params
   redirectUrl(request, response)
   // increasePopularity(request, response)
-  // return database('urls').where('shortened_url', '=', short_url).select()
+  // database('urls').where('shortened_url', '=', short_url).select()
   // // .then(() => database('urls').where('shortened_url', short_url).increment('popularity', 1))
   //   .then((data) => {
   //     if(data.length){
@@ -158,9 +159,9 @@ app.get('/:short_url', (request, response) =>{
   //       })
   //     }
   //   })
-    .catch((error) =>{
-      response.status(500).json({error})
-    })
+  //   .catch((error) =>{
+  //     response.status(500).json({error})
+  //   })
 })
 
 const addFoldersAndUrls = (data, response) => {
