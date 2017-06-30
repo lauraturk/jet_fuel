@@ -5,6 +5,7 @@ const folderForm = $('#folder-form')
 const folderSelect = $('#folder-select')
 const dataSubmit = $('#submit-url')
 const folderSorter = $('#folder-sort')
+// const jetfuel = process.env.PORT
 
 $(document).ready(() =>{
   fetch('/api/v1/folders', {
@@ -63,7 +64,10 @@ folderForm
   })
 
   if(matchFolder){
-    $('.folder-title').replaceWith(`<div class = "folder-title"><p>Selected Folder:</p><h2>${e.target.value}</h2></div>`)
+    $('.folder-title').replaceWith(`<div class = "folder-title">
+                                      <p>Selected Folder:</p>
+                                      <h2>${e.target.value}</h2>
+                                    </div>`)
     getUrlsByFolder(matchFolder.id)
       .then((urls) =>{
         urlsArray = urls
@@ -75,7 +79,10 @@ folderForm
     $('.url-inputs').addClass('active')
     $('#folder-sort').removeClass('sort-remove').addClass('sort-active')
   } else if (!matchFolder) {
-    $('.folder-title').replaceWith(`<div class = "folder-title"><p>Create New Folder:</p><h2>${e.target.value}</h2></div>`)
+    $('.folder-title').replaceWith(`<div class = "folder-title">
+                                      <p>Create New Folder:</p>
+                                      <h2>${e.target.value}</h2>
+                                    </div>`)
     $('.folder-content').addClass('active')
     $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
     $('.url-inputs').addClass('active')
@@ -92,6 +99,7 @@ dataSubmit.click((e)=>{
   let title = $('#title').val()
 
   addUrls(folder, url, title)
+
     .then(() =>{
       let matchFolder = foldersArray.find((arrFolder) =>{
         return arrFolder.folder_name.toString() === folder.trim()
@@ -100,7 +108,17 @@ dataSubmit.click((e)=>{
       if (matchFolder){
         getUrlsByFolder(matchFolder.id)
         .then((urls) =>{
-          $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${urls[urls.length-1].title}</p></div><div><h4>ShortLink: </h4><p>${urls[urls.length-1].shortened_url}</p></div>`)
+          const urlAddOn = urls[urls.length-1].urlAddOn
+          const shortUrl = urls[urls.length-1].shortened_url
+          $('.url-list').append(`<div class= 'appended-url'>
+                                  <div>
+                                    <h4>Title: </h4>
+                                    <p>${urls[urls.length-1].title}</p>
+                                  </div>
+                                  <div>
+                                    <h4>ShortLink: </h4>
+                                    <a href='${urlAddOn}/${shortUrl}'>${urlAddOn}/${shortUrl}</a>
+                                  </div>`)
         })
         .catch((error) => console.log(error))
       }
@@ -128,13 +146,29 @@ const sortUrls = (sortType) => {
 
 const urlSorter = () => {
   urlsArray.forEach((url) => {
-    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.shortened_url}</p></div>`)
+    $('.url-list').append(`<div class= 'appended-url'>
+                            <div>
+                              <h4>Title: </h4>
+                              <p>${url.title}</p>
+                            </div>
+                            <div>
+                              <h4>ShortLink: </h4>
+                              <p>${url.shortened_url}</p>
+                            </div>`)
   })
 }
 
 const urlList = (urls) =>{
   urls.forEach((url) =>{
-    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.shortened_url}</p></div>`)
+    $('.url-list').append(`<div class= 'appended-url'>
+                            <div>
+                              <h4>Title: </h4>
+                              <p>${url.title}</p>
+                            </div>
+                            <div>
+                              <h4>ShortLink: </h4>
+                              <p>${url.shortened_url}</p>
+                            </div>`)
   })
 }
 

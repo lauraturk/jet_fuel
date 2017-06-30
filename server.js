@@ -6,12 +6,17 @@ const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
+
 const encodeUrl = require('./shortener')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set('port', process.env.PORT || 3000)
+
+process.env.PORT = 'http://localhost:3000'
+const jet_fuel = `${process.env.PORT}/api`
+
 app.locals.title = 'Jet Fuel'
 
 app.get('/api/v1/folders', (request, response) => {
@@ -46,11 +51,21 @@ app.get('/api/v1/folders/:id', (request, response) => {
     })
 })
 
+addUrl = (urlArray) => {
+  const keys = Object.keys(urlArray)
+  return keys.map(url => {
+    console.log(urlArray[url], 'in urlArray map')
+  return Object.assign({}, urlArray[url], {urlAddOn: jet_fuel})
+  })
+}
+
 app.get('/api/v1/folders/:id/urls', (request, response) => {
   database('urls').where('folder_id', request.params.id).select()
     .then((urls) => {
       if(urls.length){
-        response.status(200).json(urls)
+        // console.log(Object.keys(urls))
+        // console.log(addUrl(urls), 'before json')
+        response.status(200).send(addUrl(urls))
       } else {
         response.status(404).json({
           error: 'No Urls Found'
@@ -98,7 +113,7 @@ app.get('/api/:short_url', (request, response) =>{
   database('urls').where('shortened_url', request.params.short_url).select()
     .then((data) => {
       if(data.length){
-        console.log(data[0])
+        // console.log(data[0])
         response.redirect(301, `${data[0].original_url}`)
       } else {
         response.status(404).json({
@@ -126,10 +141,10 @@ const createUrl = (url, folderId) =>{
 
   if(!url.original_url.includes('http://') && !url.original_url.includes('www.')){
     modifiedUrl = 'http://www.'.concat(url.original_url)
-    console.log(modifiedUrl)
+    // console.log(modifiedUrl)
   } else if (!url.original_url.includes('http://')) {
     modifiedUrl = 'http://'.concat(url.original_url)
-    console.log(modifiedUrl)
+    // console.log(modifiedUrl)
   } else {
     modifiedUrl = url.original_url
   }
@@ -175,7 +190,7 @@ app.post('/api/v1/folders', (request, response) => {
           .then((urlId) => {
             createShortUrl(urlId)
               .then((shortened_url) => {
-                response.status(201).json({ shortened_url })
+                response.status(201).json({ url: `${jet.fuel}${shortened_url}` })
               })
               .catch((error) => {
                 response.status(500).json({ error })
