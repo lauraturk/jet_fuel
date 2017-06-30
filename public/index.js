@@ -6,7 +6,6 @@ const folderSelect = $('#folder-select')
 const dataSubmit = $('#submit-url')
 const folderSorter = $('#folder-sort')
 const shortUrl = $('.short-url')
-// const jetfuel = process.env.PORT
 
 $(document).ready(() =>{
   fetch('/api/v1/folders', {
@@ -58,7 +57,6 @@ const addUrls = (folder, url, urlTitle) =>{
 
 shortUrl
 .on('click', (e) => {
-  // alert(e.target.value)  
 })
 
 folderForm
@@ -153,20 +151,6 @@ const sortUrls = (sortType) => {
   urlList(sortedUrls)
 }
 
-// const urlSorter = () => {
-//   urlsArray.forEach((url) => {
-//     $('.url-list').append(`<div class= 'appended-url'>
-//                             <div>
-//                               <h4>Title: </h4>
-//                               <p>${url.title}</p>
-//                             </div>
-//                             <div>
-//                               <h4>ShortLink: </h4>
-//                               <p>${url.shortened_url}</p>
-//                             </div>`)
-//   })
-// }
-
 const urlList = (urls) =>{
   urls.forEach((url) =>{
     let urlAddOn = url.urlAddOn
@@ -181,17 +165,6 @@ const urlList = (urls) =>{
                               <h4>ShortLink: </h4>
                               <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}/${shortUrl}</a>
                             </div>`)
-
-
-    // $('.url-list').append(`<div class= 'appended-url'>
-    //                         <div>
-    //                           <h4>Title: </h4>
-    //                           <p>${url.title}</p>
-    //                         </div>
-    //                         <div>
-    //                           <h4>ShortLink: </h4>
-    //                           <p>${url.shortened_url}</p>
-    //                         </div>`)
   })
 }
 

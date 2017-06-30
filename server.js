@@ -16,7 +16,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.set('port', process.env.PORT || 3000)
 
 process.env.DOMAIN = 'http://localhost:3000/api'
-// const jet_fuel = `${process.env.DOMAIN}/api`
 
 app.locals.title = 'Jet Fuel'
 
@@ -63,8 +62,6 @@ app.get('/api/v1/folders/:id/urls', (request, response) => {
   database('urls').where('folder_id', request.params.id).select()
     .then((urls) => {
       if(urls.length){
-        // console.log(Object.keys(urls))
-        // console.log(addUrl(urls), 'before json')
         response.status(200).send(addUrl(urls))
       } else {
         response.status(404).json({
@@ -109,13 +106,6 @@ app.get('/api/v1/urls/:id', (request, response) => {
     })
 })
 
-// const incrementUrl = (data) => {
-//   console.log(data)
-//   // const { id } = data[0].id
-//   // app.get('/api/')
-// }
-
-
 app.post('/api/v1/urls/:id', (req, res) => {
   const { id } = req.params
   database('urls').where('id', id).increment('popularity', 1)
@@ -141,22 +131,7 @@ const redirectUrl = (req, res) => {
 }
 
 app.get('/api/:short_url', (request, response) =>{
-  // const { short_url } = request.params
   redirectUrl(request, response)
-  // increasePopularity(request, response)
-  // return database('urls').where('shortened_url', '=', short_url).select()
-  // // .then(() => database('urls').where('shortened_url', short_url).increment('popularity', 1))
-  //   .then((data) => {
-  //     if(data.length){
-  //       console.log('im here', data)
-  //       // incrementUrl(data)
-  //       return response.redirect(301, `${data[0].original_url}`)
-  //     } else {
-  //       return response.status(404).json({
-  //         error: 'Page not found'
-  //       })
-  //     }
-  //   })
     .catch((error) =>{
       response.status(500).json({error})
     })
@@ -180,10 +155,8 @@ const createUrl = (url, folderId) =>{
 
   if(!url.original_url.includes('http') && !url.original_url.includes('www.')){
     modifiedUrl = 'http://www.'.concat(url.original_url)
-    // console.log(modifiedUrl)
   } else if (!url.original_url.includes('http')) {
     modifiedUrl = 'http://'.concat(url.original_url)
-    // console.log(modifiedUrl)
   } else {
     modifiedUrl = url.original_url
   }
