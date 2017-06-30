@@ -1,6 +1,6 @@
 
 exports.seed = (knex, Promise) => {
-  // Deletes ALL existing entries
+
   return knex('urls').del()
     .then(() => knex('folders').del())
     .then(() =>{
@@ -12,19 +12,19 @@ exports.seed = (knex, Promise) => {
           return Promise.all([
             knex('urls').insert({
               original_url: 'http://www.facebook.com',
-              shortened_url: '',
+              shortened_url: 'Ab',
               folder_id: folder[0],
               title: 'Facebook'
             }),
             knex('urls').insert({
               original_url: 'http://www.twitter.com',
-              shortened_url: '',
+              shortened_url: 'AA',
               folder_id: folder[0],
               title: 'Twitter'
             }),
             knex('urls').insert({
               original_url: 'http://www.linkedin.com',
-              shortened_url: '',
+              shortened_url: 'bA',
               folder_id: folder[0],
               title: 'LinkedIn'
             })
@@ -36,7 +36,7 @@ exports.seed = (knex, Promise) => {
         .then(folder =>{
           return knex('urls').insert({
             original_url: 'http://www.gmail.com',
-            shortened_url: '',
+            shortened_url: 'Bd',
             folder_id: folder[0],
             title: 'Gmail',
           })
