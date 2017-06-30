@@ -12,7 +12,6 @@ $(document).ready(() =>{
   })
     .then((data) => data.json())
     .then((folders) => {
-      console.log(folders)
       foldersArray = folders
       folders.forEach((folder) => {
         $('#folders').append(`<option value="${folder.folder_name}"/>`)
@@ -41,7 +40,7 @@ const getUrlsByFolder = (folderId) =>{
 }
 
 const addUrls = (folder, url, urlTitle) =>{
-  fetch('/api/v1/folders/', {
+  return fetch('/api/v1/folders/', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
@@ -58,14 +57,12 @@ folderForm
 .on('change', (e) => {
   e.preventDefault()
   let folderVal = folderSelect.val()
-  console.log(folderVal)
 
   let matchFolder = foldersArray.find((folder) =>{
     return folder.folder_name.toString() === folderVal.trim()
   })
 
   if(matchFolder){
-    console.log('folder match')
     $('.folder-title').replaceWith(`<div class = "folder-title"><p>Selected Folder:</p><h2>${e.target.value}</h2></div>`)
     getUrlsByFolder(matchFolder.id)
       .then((urls) =>{
@@ -94,8 +91,20 @@ dataSubmit.click((e)=>{
   let url = $('#url').val()
   let title = $('#title').val()
 
-  console.log(folder, url, title)
   addUrls(folder, url, title)
+    .then(() =>{
+      let matchFolder = foldersArray.find((arrFolder) =>{
+        return arrFolder.folder_name.toString() === folder.trim()
+      })
+
+      if (matchFolder){
+        getUrlsByFolder(matchFolder.id)
+        .then((urls) =>{
+          $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${urls[urls.length-1].title}</p></div><div><h4>ShortLink: </h4><p>${urls[urls.length-1].shortened_url}</p></div>`)
+        })
+        .catch((error) => console.log(error))
+      }
+    })
 })
 
 $('#url, #title, #folder-select').on('keyup', () =>{
@@ -119,13 +128,13 @@ const sortUrls = (sortType) => {
 
 const urlSorter = () => {
   urlsArray.forEach((url) => {
-    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.original_url}</p></div>`)
+    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.shortened_url}</p></div>`)
   })
 }
 
 const urlList = (urls) =>{
   urls.forEach((url) =>{
-    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.original_url}</p></div>`)
+    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.shortened_url}</p></div>`)
   })
 }
 
