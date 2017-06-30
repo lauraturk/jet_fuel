@@ -7,6 +7,8 @@ const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
+// const process.env.DOMAIN = 'http://localhost:3000/api'
+const host = process.env.DOMAIN || 'http://localhost:3000/'
 
 const encodeUrl = require('./shortener')
 
@@ -15,8 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set('port', process.env.PORT || 3000)
 
-process.env.DOMAIN = 'http://localhost:3000/api'
-// const jet_fuel = `${process.env.DOMAIN}/api`
+app.use(express.static('public'))
 
 app.locals.title = 'Jet Fuel'
 
@@ -55,7 +56,7 @@ app.get('/api/v1/folders/:id', (request, response) => {
 addUrl = (urlArray) => {
   const keys = Object.keys(urlArray)
   return keys.map(url => {
-  return Object.assign({}, urlArray[url], {urlAddOn: process.env.DOMAIN})
+  return Object.assign({}, urlArray[url], {urlAddOn: host})
   })
 }
 
@@ -140,7 +141,7 @@ const redirectUrl = (req, res) => {
     })
 }
 
-app.get('/api/:short_url', (request, response) =>{
+app.get('/:short_url', (request, response) =>{
   // const { short_url } = request.params
   redirectUrl(request, response)
   // increasePopularity(request, response)
@@ -242,7 +243,6 @@ app.post('/api/v1/folders', (request, response) => {
     })
 })
 
-app.use(express.static('public'))
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`)
