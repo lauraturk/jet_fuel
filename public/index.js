@@ -1,10 +1,12 @@
 
-let foldersArray
-let urlsArray
+let foldersArray = []
+let urlsArray = []
 const folderForm = $('#folder-form')
 const folderSelect = $('#folder-select')
 const dataSubmit = $('#submit-url')
 const folderSorter = $('#folder-sort')
+const shortUrl = $('.short-url')
+// const jetfuel = process.env.PORT
 
 $(document).ready(() =>{
   fetch('/api/v1/folders', {
@@ -53,6 +55,12 @@ const addUrls = (folder, url, urlTitle) =>{
     .catch(error => console.log(error))
 }
 
+
+shortUrl
+.on('click', (e) => {
+  // alert(e.target.value)  
+})
+
 folderForm
 .on('change', (e) => {
   e.preventDefault()
@@ -63,7 +71,10 @@ folderForm
   })
 
   if(matchFolder){
-    $('.folder-title').replaceWith(`<div class = "folder-title"><p>Selected Folder:</p><h2>${e.target.value}</h2></div>`)
+    $('.folder-title').replaceWith(`<div class = "folder-title">
+                                      <p>Selected Folder:</p>
+                                      <h2>${e.target.value}</h2>
+                                    </div>`)
     getUrlsByFolder(matchFolder.id)
       .then((urls) =>{
         urlsArray = urls
@@ -75,7 +86,10 @@ folderForm
     $('.url-inputs').addClass('active')
     $('#folder-sort').removeClass('sort-remove').addClass('sort-active')
   } else if (!matchFolder) {
-    $('.folder-title').replaceWith(`<div class = "folder-title"><p>Create New Folder:</p><h2>${e.target.value}</h2></div>`)
+    $('.folder-title').replaceWith(`<div class = "folder-title">
+                                      <p>Create New Folder:</p>
+                                      <h2>${e.target.value}</h2>
+                                    </div>`)
     $('.folder-content').addClass('active')
     $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
     $('.url-inputs').addClass('active')
@@ -92,6 +106,7 @@ dataSubmit.click((e)=>{
   let title = $('#title').val()
 
   addUrls(folder, url, title)
+
     .then(() =>{
 
       let matchFolder = foldersArray.find((arrFolder) =>{
@@ -101,7 +116,18 @@ dataSubmit.click((e)=>{
       if (matchFolder){
         getUrlsByFolder(matchFolder.id)
         .then((urls) =>{
-          $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${urls[urls.length-1].title}</p></div><div><h4>ShortLink: </h4><p>${urls[urls.length-1].shortened_url}</p></div>`)
+          console.log(urls, 'in matchFolder line 112')
+          let urlAddOn = urls[urls.length-1].urlAddOn
+          let shortUrl = urls[urls.length-1].shortened_url
+          $('.url-list').append(`<div class= 'appended-url'>
+                                  <div>
+                                    <h4>Title: </h4>
+                                    <p>${urls[urls.length-1].title}</p>
+                                  </div>
+                                  <div>
+                                    <h4>ShortLink: </h4>
+                                    <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}/${shortUrl}</a>
+                                  </div>`)
         })
         .catch((error) => console.log(error))
       }
@@ -115,27 +141,57 @@ $('#url, #title, #folder-select').on('keyup', () =>{
 folderSorter
 .on('change', (e) => {
   e.preventDefault()
-  e.target.value === 'popularity' ? sortUrls('popularity') : sortUrls('created_at')
+  sortUrls(e.target.value)
 })
 
 const sortUrls = (sortType) => {
   let urls = urlsArray
   let sortedUrls = urls.sort((a, b) => {
-    return a[sortType] - b[sortType]
+    return  b[sortType] - a[sortType]
   })
   removeUrls()
-  urlSorter(sortedUrls)
+  urlList(sortedUrls)
 }
 
-const urlSorter = () => {
-  urlsArray.forEach((url) => {
-    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.shortened_url}</p></div>`)
-  })
-}
+// const urlSorter = () => {
+//   urlsArray.forEach((url) => {
+//     $('.url-list').append(`<div class= 'appended-url'>
+//                             <div>
+//                               <h4>Title: </h4>
+//                               <p>${url.title}</p>
+//                             </div>
+//                             <div>
+//                               <h4>ShortLink: </h4>
+//                               <p>${url.shortened_url}</p>
+//                             </div>`)
+//   })
+// }
 
 const urlList = (urls) =>{
   urls.forEach((url) =>{
-    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.shortened_url}</p></div>`)
+    let urlAddOn = url.urlAddOn
+    let shortUrl = url.shortened_url
+
+    $('.url-list').append(`<div class= 'appended-url'>
+                            <div>
+                              <h4>Title: </h4>
+                              <p>${url.title}</p>
+                            </div>
+                            <div>
+                              <h4>ShortLink: </h4>
+                              <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}/${shortUrl}</a>
+                            </div>`)
+
+
+    // $('.url-list').append(`<div class= 'appended-url'>
+    //                         <div>
+    //                           <h4>Title: </h4>
+    //                           <p>${url.title}</p>
+    //                         </div>
+    //                         <div>
+    //                           <h4>ShortLink: </h4>
+    //                           <p>${url.shortened_url}</p>
+    //                         </div>`)
   })
 }
 

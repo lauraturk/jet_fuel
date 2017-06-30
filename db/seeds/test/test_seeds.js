@@ -14,19 +14,22 @@ exports.seed = (knex, Promise) => {
               original_url: 'http://www.facebook.com',
               shortened_url: 'Ab',
               folder_id: folder[0],
-              title: 'Facebook'
+              title: 'Facebook',
+              popularity: 0
             }),
             knex('urls').insert({
               original_url: 'http://www.twitter.com',
               shortened_url: 'AA',
               folder_id: folder[0],
-              title: 'Twitter'
+              title: 'Twitter',
+              popularity: 0
             }),
             knex('urls').insert({
               original_url: 'http://www.linkedin.com',
               shortened_url: 'bA',
               folder_id: folder[0],
-              title: 'LinkedIn'
+              title: 'LinkedIn',
+              popularity: 0
             })
           ])
         }),
@@ -39,6 +42,7 @@ exports.seed = (knex, Promise) => {
             shortened_url: 'Bd',
             folder_id: folder[0],
             title: 'Gmail',
+            popularity: 0
           })
         })
         .then(() => console.log('Seeding Complete'))
