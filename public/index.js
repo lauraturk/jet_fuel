@@ -58,7 +58,7 @@ const addUrls = (folder, url, urlTitle) =>{
 
 shortUrl
 .on('click', (e) => {
-  // alert(e.target.value)  
+  // alert(e.target.value)
 })
 
 folderForm
@@ -126,7 +126,7 @@ dataSubmit.click((e)=>{
                                   </div>
                                   <div>
                                     <h4>ShortLink: </h4>
-                                    <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}/${shortUrl}</a>
+                                    <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}${shortUrl}</a>
                                   </div>`)
         })
         .catch((error) => console.log(error))
@@ -179,7 +179,7 @@ const urlList = (urls) =>{
                             </div>
                             <div>
                               <h4>ShortLink: </h4>
-                              <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}/${shortUrl}</a>
+                              <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}${shortUrl}</a>
                             </div>`)
 
 
