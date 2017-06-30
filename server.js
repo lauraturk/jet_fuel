@@ -15,8 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set('port', process.env.PORT || 3000)
 
-process.env.PORT = 'http://localhost:3000'
-const jet_fuel = `${process.env.PORT}/api`
+process.env.DOMAIN = 'http://localhost:3000/api'
+// const jet_fuel = `${process.env.DOMAIN}/api`
 
 app.locals.title = 'Jet Fuel'
 
@@ -55,7 +55,7 @@ app.get('/api/v1/folders/:id', (request, response) => {
 addUrl = (urlArray) => {
   const keys = Object.keys(urlArray)
   return keys.map(url => {
-  return Object.assign({}, urlArray[url], {urlAddOn: jet_fuel})
+  return Object.assign({}, urlArray[url], {urlAddOn: process.env.DOMAIN})
   })
 }
 
