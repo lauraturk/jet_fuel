@@ -129,6 +129,7 @@ const redirectUrl = (req, res) => {
   const { short_url } = req.params
   return database('urls').where('shortened_url', short_url).select()
     .then((data) => {
+      database('')
       if(data.length){
         return response.redirect(301, `${data[0].original_url}`)
       } else {
@@ -161,12 +162,15 @@ app.get('/api/:short_url', (request, response) =>{
     })
 })
 
-const addFoldersAndUrls = (data) => {
+const addFoldersAndUrls = (data, response) => {
   return database('folders').insert({folder_name: data.folder_name}, 'id')
   .then((folderId) => {
     return createUrl(data, folderId[0])
       .then((urlId) => {
-        return createShortUrl(urlId)
+        createShortUrl(urlId)
+        .then((urls) =>{
+          response.status(201).json(urls)
+        })
       })
   })
 }
@@ -207,14 +211,13 @@ app.post('/api/v1/folders', (request, response) => {
       })
     }
   }
-
   database('folders').select()
     .then((folders) => {
       let match = folders.find((folder) =>{
         return folder.folder_name === data.folder_name;
       })
       if (!match) {
-        addFoldersAndUrls(data)
+        addFoldersAndUrls(data, response)
           .then((urlData) => {
             response.status(201).json(urlData)
           })
@@ -244,3 +247,5 @@ app.use(express.static('public'))
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`)
 })
+
+module.exports = app;

@@ -1,5 +1,3 @@
-// Update with your config settings.
-
 module.exports = {
 
   development: {
@@ -12,7 +10,18 @@ module.exports = {
     seeds: {
       directory: './db/seed/dev'
     }
-  }
+  },
+  test: {
+    client: 'pg',
+    connection: 'postgres://localhost/jetfuel_test',
+    useNullAsDefault: true,
+    migrations: {
+      directory: __dirname +'/db/migrations'
+    },
+    seeds: {
+      directory: __dirname +'/db/seeds/test'
+    }
+ }
 
   // staging: {
   //   client: 'postgresql',
