@@ -7,7 +7,6 @@ const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
-// const process.env.DOMAIN = 'http://localhost:3000/api'
 const host = process.env.DOMAIN || 'http://localhost:3000/api'
 
 const encodeUrl = require('./shortener')
@@ -53,19 +52,10 @@ app.get('/api/v1/folders/:id', (request, response) => {
     })
 })
 
-// addUrl = (urlArray) => {
-//   const keys = Object.keys(urlArray)
-//   return keys.map(url => {
-//   return Object.assign({}, urlArray[url], {urlAddOn: host})
-//   })
-// }
-
 app.get('/api/v1/folders/:id/urls', (request, response) => {
   database('urls').where('folder_id', request.params.id).select()
     .then((urls) => {
       if(urls.length){
-        // console.log(Object.keys(urls))
-        // console.log(addUrl(urls), 'before json')
         response.status(200).json(urls)
       } else {
         response.status(404).json({
@@ -109,13 +99,6 @@ app.get('/api/v1/urls/:id', (request, response) => {
       response.status(500).json({error})
     })
 })
-
-// const incrementUrl = (data) => {
-//   console.log(data)
-//   // const { id } = data[0].id
-//   // app.get('/api/')
-// }
-
 
 app.post('/api/v1/urls/:id', (req, res) => {
   const { id } = req.params
@@ -182,10 +165,8 @@ const createUrl = (url, folderId) =>{
 
   if(!url.original_url.includes('http') && !url.original_url.includes('www.')){
     modifiedUrl = 'http://www.'.concat(url.original_url)
-    // console.log(modifiedUrl)
   } else if (!url.original_url.includes('http')) {
     modifiedUrl = 'http://'.concat(url.original_url)
-    // console.log(modifiedUrl)
   } else {
     modifiedUrl = url.original_url
   }
