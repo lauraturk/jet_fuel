@@ -82,6 +82,7 @@ describe('API Routes', () => {
       })
     })
   })
+
   describe('GET /api/v1/urls for getting ALL urls', () => {
     it('should return an array of URL', (done) =>{
       chai.request(server)
@@ -100,6 +101,7 @@ describe('API Routes', () => {
         done();
       })
     })
+
     it('should return an array of URLs based on Folder ID', (done) =>{
       chai.request(server)
       .get('/api/v1/folders/2/urls')
@@ -114,6 +116,17 @@ describe('API Routes', () => {
         done();
       })
     })
+
+    it('should return a 404 if a folder is not found /api/v1/folders/:id/urls', (done) =>{
+      chai.request(server)
+      .get('/api/v1/folders/0/urls')
+      .end((err, response) => {
+        response.should.have.status(404);
+        response.should.be.json;
+        done();
+      })
+    })
+
     it('should return a URL based on the URL id with /api/v1/urls/:id', (done) =>{
       chai.request(server)
       .get('/api/v1/urls/4/')
@@ -125,6 +138,16 @@ describe('API Routes', () => {
         response.body.shortened_url.should.equal('Bd');
         response.body.folder_id.should.equal(2);
         response.body.title.should.equal('Gmail');
+        done();
+      })
+    })
+
+    it('should return a 404 a specific url is found /api/v1/urls/:id', (done) =>{
+      chai.request(server)
+      .get('/api/v1/urls/0')
+      .end((err, response) => {
+        response.should.have.status(404);
+        response.should.be.json;
         done();
       })
     })

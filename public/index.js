@@ -58,7 +58,7 @@ const addUrls = (folder, url, urlTitle) =>{
 
 shortUrl
 .on('click', (e) => {
-  // alert(e.target.value)
+  // alert(e.target.value)  
 })
 
 folderForm
