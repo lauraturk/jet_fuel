@@ -54,11 +54,6 @@ const addUrls = (folder, url, urlTitle) =>{
     .catch(error => console.log(error))
 }
 
-
-shortUrl
-.on('click', (e) => {
-})
-
 folderForm
 .on('change', (e) => {
   e.preventDefault()
@@ -115,7 +110,6 @@ dataSubmit.click((e)=>{
         getUrlsByFolder(matchFolder.id)
         .then((urls) =>{
           console.log(urls, 'in matchFolder line 112')
-          let urlAddOn = urls[urls.length-1].urlAddOn
           let shortUrl = urls[urls.length-1].shortened_url
           $('.url-list').append(`<div class= 'appended-url'>
                                   <div>
@@ -124,7 +118,7 @@ dataSubmit.click((e)=>{
                                   </div>
                                   <div>
                                     <h4>ShortLink: </h4>
-                                    <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}/${shortUrl}</a>
+                                    <a href='/${shortUrl}' class="short-url">/${shortUrl}</a>
                                   </div>`)
         })
         .catch((error) => console.log(error))
@@ -153,7 +147,6 @@ const sortUrls = (sortType) => {
 
 const urlList = (urls) =>{
   urls.forEach((url) =>{
-    let urlAddOn = url.urlAddOn
     let shortUrl = url.shortened_url
 
     $('.url-list').append(`<div class= 'appended-url'>
@@ -163,7 +156,7 @@ const urlList = (urls) =>{
                             </div>
                             <div>
                               <h4>ShortLink: </h4>
-                              <a href='${urlAddOn}/${shortUrl}' class="short-url">${urlAddOn}/${shortUrl}</a>
+                              <a href='/${shortUrl}' class="short-url">/${shortUrl}</a>
                             </div>`)
   })
 }

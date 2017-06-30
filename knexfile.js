@@ -11,6 +11,7 @@ module.exports = {
       directory: './db/seed/dev'
     }
   },
+
   test: {
     client: 'pg',
     connection: 'postgres://localhost/jetfuel_test',
@@ -21,35 +22,14 @@ module.exports = {
     seeds: {
       directory: __dirname +'/db/seeds/test'
     }
- }
+ },
 
-  // staging: {
-  //   client: 'postgresql',
-  //   connection: {
-  //     database: 'my_db',
-  //     user:     'username',
-  //     password: 'password'
-  //   },
-  //   pool: {
-  //     min: 2,
-  //     max: 10
-  //   },
-  // },
-
-  // production: {
-  //   client: 'postgresql',
-  //   connection: {
-  //     database: 'my_db',
-  //     user:     'username',
-  //     password: 'password'
-  //   },
-  //   pool: {
-  //     min: 2,
-  //     max: 10
-  //   },
-  //   migrations: {
-  //     tableName: 'knex_migrations'
-  //   }
-  // }
-
+  production: {
+    client: 'pg',
+    connection: process.env.DATABASE_URL + `?ssl=true`,
+    migrations: {
+      directory: './db/migrations'
+    },
+    useNullAsDefault: true
+  }
 };

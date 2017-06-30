@@ -7,6 +7,7 @@ const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
+const host = process.env.DOMAIN || 'http://localhost:3000/api'
 
 const encodeUrl = require('./shortener')
 
@@ -15,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set('port', process.env.PORT || 3000)
 
-process.env.DOMAIN = 'http://localhost:3000/api'
+app.use(express.static('public'))
 
 app.locals.title = 'Jet Fuel'
 
@@ -51,18 +52,11 @@ app.get('/api/v1/folders/:id', (request, response) => {
     })
 })
 
-addUrl = (urlArray) => {
-  const keys = Object.keys(urlArray)
-  return keys.map(url => {
-  return Object.assign({}, urlArray[url], {urlAddOn: process.env.DOMAIN})
-  })
-}
-
 app.get('/api/v1/folders/:id/urls', (request, response) => {
   database('urls').where('folder_id', request.params.id).select()
     .then((urls) => {
       if(urls.length){
-        response.status(200).send(addUrl(urls))
+        response.status(200).json(urls)
       } else {
         response.status(404).json({
           error: 'No Urls Found'
@@ -119,22 +113,38 @@ const redirectUrl = (req, res) => {
   const { short_url } = req.params
   return database('urls').where('shortened_url', short_url).select()
     .then((data) => {
-      database('')
+      // database('')
       if(data.length){
-        return response.redirect(301, `${data[0].original_url}`)
+        return res.redirect(301, `${data[0].original_url}`)
       } else {
-        return response.status(404).json({
+        return res.status(404).json({
           error: 'Page not found'
         })
       }
     })
 }
 
-app.get('/api/:short_url', (request, response) =>{
+app.get('/:short_url', (request, response) =>{
+  // console.log( request );
+  // const { short_url } = request.params
   redirectUrl(request, response)
-    .catch((error) =>{
-      response.status(500).json({error})
-    })
+  // increasePopularity(request, response)
+  // database('urls').where('shortened_url', '=', short_url).select()
+  // // .then(() => database('urls').where('shortened_url', short_url).increment('popularity', 1))
+  //   .then((data) => {
+  //     if(data.length){
+  //       console.log('im here', data)
+  //       // incrementUrl(data)
+  //       return response.redirect(301, `${data[0].original_url}`)
+  //     } else {
+  //       return response.status(404).json({
+  //         error: 'Page not found'
+  //       })
+  //     }
+  //   })
+  //   .catch((error) =>{
+  //     response.status(500).json({error})
+  //   })
 })
 
 const addFoldersAndUrls = (data, response) => {
@@ -215,7 +225,6 @@ app.post('/api/v1/folders', (request, response) => {
     })
 })
 
-app.use(express.static('public'))
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`)
