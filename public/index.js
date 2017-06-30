@@ -1,62 +1,146 @@
-// on change store the value of folder form
-// send value to server as folder for url
 
-  const testFolder = $('#folder-form')
+let foldersArray
+let urlsArray
+const folderForm = $('#folder-form')
+const folderSelect = $('#folder-select')
+const dataSubmit = $('#submit-url')
+const folderSorter = $('#folder-sort')
 
-  let foldersArray = [{title: 'yellow', url:'llllll', 'popularity': 0, 'id': 1},
-  {title: 'yellow', url:'llllll', 'popularity': 2, folder: 'color', 'id': 3},
-  {title: 'blue', url:'llllll', 'popularity': 4, folder: 'color', 'id': 2},
-  {title: 'red', url:'llllll', 'popularity': 1, folder: 'color', 'id': 4}]
-
-  const urlList = (title) => {
-    const foundFolder = foldersArray.filter((folder) => {
-      return folder.folder === title
+$(document).ready(() =>{
+  fetch('/api/v1/folders', {
+    method: 'GET',
+  })
+    .then((data) => data.json())
+    .then((folders) => {
+      console.log(folders)
+      foldersArray = folders
+      folders.forEach((folder) => {
+        $('#folders').append(`<option value="${folder.folder_name}"/>`)
+      })
     })
-    console.log(foundFolder);
-    return urlLister(foundFolder)
-  }
+    .catch(error => console.log(error))
+})
 
-  const urlLister = (folderObject) => {
-    console.log(folderObject)
-    folderObject.forEach((object) => {
-      console.log(object.title)
-      $('.url-list').append(`<li>${object.url}, ${object.title}</li>`)
-      // $('.url-list').append(`<li> ITEM HERE </li>`)
+const getAllUrls = () =>{
+  fetch('/api/v1/urls', {
+    method: 'GET',
+  })
+    .then((data) => data.json())
+    .then((urls) => {
+      console.log(urls)
     })
-  }
+    .catch(error => console.log(error))
+}
 
-  testFolder
-  .on('change', (e) => {
-    e.preventDefault()
-    //on submit, grab value of folder select and use for server things
+const getUrlsByFolder = (folderId) =>{
+  return fetch(`/api/v1/folders/${folderId}/urls`, {
+  method: 'GET',
+  })
+  .then((data) => data.json())
+  .catch(error => console.log(error))
+}
 
-    $('.folder-title').replaceWith(`<div class = "folder-title"><h2>${e.target.value}</h2></div>`)
-    $('.folder-title').append(`<ul class = 'url-list'></ul>`)
+const addUrls = (folder, url, urlTitle) =>{
+  fetch('/api/v1/folders/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      "folder_name": `${folder}`,
+      "original_url": `${url}`,
+      "title": `${urlTitle}`
+    })
+  })
+    .then((response) => console.log(response))
+    .catch(error => console.log(error))
+}
+
+folderForm
+.on('change', (e) => {
+  e.preventDefault()
+  let folderVal = folderSelect.val()
+  console.log(folderVal)
+
+  let matchFolder = foldersArray.find((folder) =>{
+    return folder.folder_name.toString() === folderVal.trim()
+  })
+
+  if(matchFolder){
+    console.log('folder match')
+    $('.folder-title').replaceWith(`<div class = "folder-title"><p>Selected Folder:</p><h2>${e.target.value}</h2></div>`)
+    getUrlsByFolder(matchFolder.id)
+      .then((urls) =>{
+        urlsArray = urls
+        $('.folder-title').append(`<div class = 'url-list'></div>`)
+        urlList(urls)
+      })
+      .catch((error) => console.log(error))
     $('.folder-content').addClass('active')
-    urlList(e.target.value)
-  })
-  .on('submit', (e) => {
-    e.preventDefault();
-  })
-
-  const folderSorter = $('#folder-sort')
-  const removeUrls = () =>{
-    $('.url-list').empty()
+    $('.url-inputs').addClass('active')
+    $('#folder-sort').removeClass('sort-remove').addClass('sort-active')
+  } else if (!matchFolder) {
+    $('.folder-title').replaceWith(`<div class = "folder-title"><p>Create New Folder:</p><h2>${e.target.value}</h2></div>`)
+    $('.folder-content').addClass('active')
+    $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
+    $('.url-inputs').addClass('active')
   }
+})
+.on('submit', (e) => {
+  e.preventDefault();
+})
 
-  const sortUrls = (objProperty) => {
-    foldersArray.sort((a, b) => {
-      return a[objProperty] - b[objProperty]
-    })
-    removeUrls()
-    urlLister(foldersArray)
-  }
+dataSubmit.click((e)=>{
+  e.preventDefault()
+  let folder = folderSelect.val()
+  let url = $('#url').val()
+  let title = $('#title').val()
 
-  folderSorter
-  .on('change', (e) => {
-    e.preventDefault()
-    e.target.value === 'popularity' ? sortUrls('popularity') : sortUrls('id')
+  console.log(folder, url, title)
+  addUrls(folder, url, title)
+})
 
-    console.log('value', e.target.value)
-    console.log('sortedArray', foldersArray)
+$('#url, #title, #folder-select').on('keyup', () =>{
+  enableCheck()
+})
+
+folderSorter
+.on('change', (e) => {
+  e.preventDefault()
+  e.target.value === 'popularity' ? sortUrls('popularity') : sortUrls('created_at')
+})
+
+const sortUrls = (sortType) => {
+  let urls = urlsArray
+  let sortedUrls = urls.sort((a, b) => {
+    return a[sortType] - b[sortType]
   })
+  removeUrls()
+  urlSorter(sortedUrls)
+}
+
+const urlSorter = () => {
+  urlsArray.forEach((url) => {
+    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.original_url}</p></div>`)
+  })
+}
+
+const urlList = (urls) =>{
+  urls.forEach((url) =>{
+    $('.url-list').append(`<div class= 'appended-url'><div><h4>Title: </h4><p>${url.title}</p></div><div><h4>ShortLink: </h4><p>${url.original_url}</p></div>`)
+  })
+}
+
+const removeUrls = () =>{
+  $('.url-list').empty()
+}
+
+const enableCheck = () =>{
+  let folder = folderSelect.val()
+  let url = $('#url').val()
+  let title = $('#title').val()
+
+  if(folder.length > 0 && url.length > 0 && title.length > 0){
+    dataSubmit.prop('disabled', false)
+  } else {
+    dataSubmit.prop('disabled', true)
+  }
+}

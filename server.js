@@ -94,21 +94,7 @@ app.get('/api/v1/urls/:id', (request, response) => {
     })
 })
 
-// app.get('/api/v1/urls/:shortened_url', (request, response) => {
-//   database('urls').where('shortened_url', request.params.shortened_url).select()
-//     .then((urls) => {
-//       if(urls.length){
-//         response.status(200).json(urls[0])
-//       } else {
-//         response.status(404).json({
-//           error: 'No Urls Found'
-//         })
-//       }
-//     })
-//     .catch((error) => {
-//       response.status(500).json({error})
-//     })
-// })
+
 
 const createUrl = (url, folderId) =>{
   console.log(url, 'in create url')
@@ -134,12 +120,12 @@ app.post('/api/v1/folders', (request, response) => {
       })
     }
   }
-
   ///// code to check if multiple similarly named folders.
-  // database('folders').where('folder_name', data.folder_name).select()
-  //   .then((folder_name) => {
-  //     return response.status(409).json({
-  //       error: `The Folder called ${folder_name} already exists. Please try a different folder name.`
+  // database('folders').where('folder_name', data.folder_name).select('id')
+  //   .then((folderId) =>{
+  //     createUrl(data, folderId[0])
+  //     .then((urlId) => {
+  //       return response.status(201).json({id: urlId[0]})
   //     })
   //   })
 
@@ -165,6 +151,19 @@ app.post('/api/v1/folders', (request, response) => {
       response.status(500).json({ error })
     })
 })
+
+//app.get('/:shortened_url', (request, response) =>{
+  //database('urls').where('shortened_url' request.params.shortened_url).select()
+    //.then((short_url) =>{
+      //response.goto(original_url)
+      // window.location.href = 'your link'
+      //res.redirect(301, 'your/path.html');
+    //})
+    //.catch((error) =>{
+      //response.status(500).json({error})
+    //})
+  //})
+//})
 
 app.use(express.static('public'))
 
