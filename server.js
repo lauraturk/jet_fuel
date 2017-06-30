@@ -111,7 +111,15 @@ app.get('/api/:short_url', (request, response) =>{
     })
 })
 
-
+const addFoldersAndUrls = (data) => {
+  return database('folders').insert({folder_name: data.folder_name}, 'id')
+  .then((folderId) => {
+    createUrl(data, folderId[0])
+      .then((urlId) => {
+        createShortUrl(urlId)
+      })
+  })
+}
 
 const createUrl = (url, folderId) =>{
   let modifiedUrl
@@ -148,38 +156,37 @@ app.post('/api/v1/folders', (request, response) => {
       })
     }
   }
-  ///// code to check if multiple similarly named folders.
-  // database('folders').where('folder_name', data.folder_name).select('id')
-  //   .then((folderId) =>{
-  //     createUrl(data, folderId[0])
-  //     .then((urlId) => {
-  //       return response.status(201).json({id: urlId[0]})
-  //     })
-  //   })
 
-  database('folders').insert({folder_name: data.folder_name}, 'id')
-    .then((folderId) => {
-      createUrl(data, folderId[0])
-        .then((urlId) => {
-          createShortUrl(urlId)
-            .then((shortened_url) => {
-              response.status(201).json({ shortened_url })
+  database('folders').select()
+    .then((folders) => {
+      let match = folders.find((folder) =>{
+        return folder.folder_name === data.folder_name;
+      })
+      if (!match) {
+        addFoldersAndUrls(data)
+          .then((urlData) => {
+            response.status(201).json(urlData)
+          })
+          .catch((error) =>{
+            response.status(500).json({error})
+          })
+      } else {
+        createUrl(data, match.id)
+          .then((urlId) => {
+            createShortUrl(urlId)
+              .then((shortened_url) => {
+                response.status(201).json({ shortened_url })
+              })
+              .catch((error) => {
+                response.status(500).json({ error })
+              })
             })
-            .catch((error) => {
-              response.status(500).json({ error })
-            })
-        })
-      //   .catch((error) => {
-      //     response.status(500).json({ error })
-      //   })
-      // response.status(201).json({id: folderId[0]})
+          }
     })
     .catch(error => {
       response.status(500).json({ error })
     })
 })
-
-
 
 app.use(express.static('public'))
 
