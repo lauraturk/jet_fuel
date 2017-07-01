@@ -165,23 +165,18 @@ const addFoldersAndUrls = (data, response) => {
 }
 
 const createUrl = (url, folderId) =>{
-  let modifiedUrl
+  console.log('created a url', url.original_url)
 
-  if(!url.original_url.includes('http') && !url.original_url.includes('www.')){
-    modifiedUrl = 'http://www.'.concat(url.original_url)
-  } else if (!url.original_url.includes('http')) {
-    modifiedUrl = 'http://'.concat(url.original_url)
-  } else {
-    modifiedUrl = url.original_url
-  }
-
-  return database('urls').insert({original_url: modifiedUrl,
-                                  folder_id: folderId,
-                                  title: url.title,
-                                  popularity: 0}, 'id')
+  return database('urls').insert({
+    original_url: url.original_url,
+    folder_id: folderId,
+    title: url.title,
+    popularity: 0
+  }, 'id')
 }
 
 const createShortUrl = (id) => {
+  console.log('created a short url')
   const integerId = id[0]
   const shortenedUrl = encodeUrl(id)
   return database('urls').where('id', '=', integerId).update({shortened_url: `${shortenedUrl}`}, 'shortened_url')
@@ -198,6 +193,7 @@ app.post('/api/v1/folders', (request, response) => {
       })
     }
   }
+
   database('folders').select()
     .then((folders) => {
       let match = folders.find((folder) =>{
@@ -216,7 +212,7 @@ app.post('/api/v1/folders', (request, response) => {
           .then((urlId) => {
             createShortUrl(urlId)
               .then((shortened_url) => {
-                response.status(201).json({ url: `${jet.fuel}${shortened_url}` })
+                response.status(201).json({ short_url: `${shortened_url}`})
               })
               .catch((error) => {
                 response.status(500).json({ error })

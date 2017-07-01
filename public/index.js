@@ -41,29 +41,20 @@ const getUrlsByFolder = (folderId) =>{
 }
 
 const addUrls = (folder, url, urlTitle) =>{
-  return fetch('/api/v1/folders/', {
+   return fetch('/api/v1/folders/', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
-      "folder_name": `${folder}`,
-      "original_url": `${url}`,
-      "title": `${urlTitle}`
+      folder_name: `${folder}`,
+      original_url: `${url}`,
+      title: `${urlTitle}`
     })
   })
     .then((response) => console.log(response))
     .catch(error => console.log(error))
 }
 
-const updatePopularity = (shortened_url) =>{
-  fetch('api/v1/urls/popularity', {
-    method: 'PUT',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      shortened_url: `${shortened_url}`
-    })
-  }).then((response) => console.log(response))
-    .catch((error) => console.log(error))
-}
+
 
 folderForm
 .on('change', (e) => {
@@ -104,9 +95,7 @@ folderForm
   e.preventDefault();
 })
 
-const isValid = (element, index, array) =>{
-  return element !== ' ' && element !== ''
-}
+
 
 dataSubmit.click((e)=>{
   e.preventDefault()
@@ -114,10 +103,14 @@ dataSubmit.click((e)=>{
   let url = $('#url').val()
   let title = $('#title').val()
 
-  if([url, folder, title].every(isValid)){
-    addUrls(folder, url, title)
-    .then(() =>{
 
+
+  if([url, folder, title].every(isValid)){
+
+    let modifiedUrl = urlValid(url)
+
+    addUrls(folder, modifiedUrl, title)
+      .then(() =>{
       let matchFolder = foldersArray.find((arrFolder) =>{
         return arrFolder.folder_name.toString() === folder.trim()
       })
@@ -134,14 +127,13 @@ dataSubmit.click((e)=>{
             </div>
             <div>
               <h4>ShortLink: </h4>
-              <button id ='test-button' class="short-url">/${shortUrl}</button>
+              <a href= ${shortUrl} id ='test-button' class="short-url">/${shortUrl}</a>
             </div>`)
         })
         .catch((error) => console.log(error))
       }
     })
   }
-
 
   folderSelect.val('')
   $('#url').val('')
@@ -158,14 +150,7 @@ folderSorter
   sortUrls(e.target.value)
 })
 
-const sortUrls = (sortType) => {
-  let urls = urlsArray
-  let sortedUrls = urls.sort((a, b) => {
-    return  b[sortType] - a[sortType]
-  })
-  removeUrls()
-  urlList(sortedUrls)
-}
+
 
 $('.folder-title').find('click',(e) =>{
   console.log(e.target.innerText)
@@ -188,7 +173,7 @@ const urlList = (urls) =>{
       </div>
       <div>
         <h4>ShortLink:</h4>
-        <button id ='test-button' class="short-url">/${shortUrl}</button>
+        <a href= ${shortUrl} id ='test-button' class="short-url">/${shortUrl}</a>
       </div>`)
   })
 }
@@ -197,15 +182,56 @@ const removeUrls = () =>{
   $('.url-list').empty()
 }
 
+const sortUrls = (sortType) => {
+  let urls = urlsArray
+  let sortedUrls = urls.sort((a, b) => {
+    return  b[sortType] - a[sortType]
+  })
+  removeUrls()
+  urlList(sortedUrls)
+}
+
+const updatePopularity = (shortened_url) =>{
+  fetch('api/v1/urls/popularity', {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      shortened_url: `${shortened_url}`
+    })
+  }).then((response) => console.log(response))
+    .catch((error) => console.log(error))
+}
+
+const isValid = (element, index, array) =>{
+  return element !== ' ' && element !== ''
+}
+
+const urlValid = (url) =>{
+  let modifiedUrl
+  let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
+
+  if(!url.includes('http') && !url.includes('www.') && regex.test(url)){
+    modifiedUrl = 'http://www.'.concat(url)
+  } else if (!url.includes('http://') && regex.test(url)) {
+    modifiedUrl = 'http://'.concat(url)
+  } else if (regex.test(url)){
+    modifiedUrl = url
+  }
+
+  return modifiedUrl
+}
+
 const enableCheck = () =>{
+
+  let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
+
   let folder = folderSelect.val()
   let url = $('#url').val()
   let title = $('#title').val()
 
-  if([url, folder, title].every(isValid)){
+  if([folder, title].every(isValid) && regex.test(url)){
     dataSubmit.prop('disabled', false)
   } else {
     dataSubmit.prop('disabled', true)
   }
-
 }
