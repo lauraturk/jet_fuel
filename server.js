@@ -109,11 +109,9 @@ app.post('/api/v1/urls/:id', (req, res) => {
 
 
 const redirectUrl = (req, res) => {
-  console.log('here? redirectme', req);
   const { short_url } = req.params
   return database('urls').where('shortened_url', short_url).select()
     .then((data) => {
-      // database('')
       if(data.length){
         return res.redirect(301, `${data[0].original_url}`)
       } else {
@@ -124,27 +122,33 @@ const redirectUrl = (req, res) => {
     })
 }
 
+app.put('/api/v1/urls/popularity', (request, response) => {
+  console.log(request.body, 'request')
+  // let updatePopularity = parseInt(req.body.popularity) + 1
+  // database('urls').where('short_link', req.body.short_link).update('popularity', 1)
+  //   .then( thing => {
+  //     res.status(201).json({ response: 'click_count successfully incremented' })
+  //   })
+  //   .catch( error => {
+  //     res.status(500).json({ error });
+  //   })
+})
+
 app.get('/:short_url', (request, response) =>{
-  // console.log( request );
-  // const { short_url } = request.params
-  redirectUrl(request, response)
-  // increasePopularity(request, response)
-  // database('urls').where('shortened_url', '=', short_url).select()
-  // // .then(() => database('urls').where('shortened_url', short_url).increment('popularity', 1))
-  //   .then((data) => {
-  //     if(data.length){
-  //       console.log('im here', data)
-  //       // incrementUrl(data)
-  //       return response.redirect(301, `${data[0].original_url}`)
-  //     } else {
-  //       return response.status(404).json({
-  //         error: 'Page not found'
-  //       })
-  //     }
-  //   })
-  //   .catch((error) =>{
-  //     response.status(500).json({error})
-  //   })
+  database('urls').where('shortened_url', request.params.short_url).select()
+    .then((data) => {
+      if(data.length){
+        // return response.status(200)
+        return response.redirect(301, `${data[0].original_url}`)
+      } else {
+        return response.status(404).json({
+          error: 'Page not found'
+        })
+      }
+    })
+    .catch((error) =>{
+      response.status(500).json({error})
+    })
 })
 
 const addFoldersAndUrls = (data, response) => {
