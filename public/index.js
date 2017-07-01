@@ -41,18 +41,20 @@ const getUrlsByFolder = (folderId) =>{
 }
 
 const addUrls = (folder, url, urlTitle) =>{
-  return fetch('/api/v1/folders/', {
+   return fetch('/api/v1/folders/', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
-      "folder_name": `${folder}`,
-      "original_url": `${url}`,
-      "title": `${urlTitle}`
+      folder_name: `${folder}`,
+      original_url: `${url}`,
+      title: `${urlTitle}`
     })
   })
     .then((response) => console.log(response))
     .catch(error => console.log(error))
 }
+
+
 
 folderForm
 .on('change', (e) => {
@@ -65,9 +67,10 @@ folderForm
 
   if(matchFolder){
     $('.folder-title').replaceWith(`<div class = "folder-title">
-                                      <p>Selected Folder:</p>
-                                      <h2>${e.target.value}</h2>
-                                    </div>`)
+      <p>Selected Folder:</p>
+      <h2>${e.target.value}</h2>
+    </div>`)
+
     getUrlsByFolder(matchFolder.id)
       .then((urls) =>{
         urlsArray = urls
@@ -80,9 +83,9 @@ folderForm
     $('#folder-sort').removeClass('sort-remove').addClass('sort-active')
   } else if (!matchFolder) {
     $('.folder-title').replaceWith(`<div class = "folder-title">
-                                      <p>Create New Folder:</p>
-                                      <h2>${e.target.value}</h2>
-                                    </div>`)
+      <p>Create New Folder:</p>
+      <h2>${e.target.value}</h2>
+    </div>`)
     $('.folder-content').addClass('active')
     $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
     $('.url-inputs').addClass('active')
@@ -92,16 +95,22 @@ folderForm
   e.preventDefault();
 })
 
+
+
 dataSubmit.click((e)=>{
   e.preventDefault()
   let folder = folderSelect.val()
   let url = $('#url').val()
   let title = $('#title').val()
 
-  addUrls(folder, url, title)
 
-    .then(() =>{
 
+  if([url, folder, title].every(isValid)){
+
+    let modifiedUrl = urlValid(url)
+
+    addUrls(folder, modifiedUrl, title)
+      .then(() =>{
       let matchFolder = foldersArray.find((arrFolder) =>{
         return arrFolder.folder_name.toString() === folder.trim()
       })
@@ -112,18 +121,23 @@ dataSubmit.click((e)=>{
           console.log(urls, 'in matchFolder line 112')
           let shortUrl = urls[urls.length-1].shortened_url
           $('.url-list').append(`<div class= 'appended-url'>
-                                  <div>
-                                    <h4>Title: </h4>
-                                    <p>${urls[urls.length-1].title}</p>
-                                  </div>
-                                  <div>
-                                    <h4>ShortLink: </h4>
-                                    <a href='/${shortUrl}' class="short-url">/${shortUrl}</a>
-                                  </div>`)
+            <div>
+              <h4>Title: </h4>
+              <p>${urls[urls.length-1].title}</p>
+            </div>
+            <div>
+              <h4>ShortLink: </h4>
+              <a href= ${shortUrl} id ='test-button' class="short-url">/${shortUrl}</a>
+            </div>`)
         })
         .catch((error) => console.log(error))
       }
     })
+  }
+
+  folderSelect.val('')
+  $('#url').val('')
+  $('#title').val('')
 })
 
 $('#url, #title, #folder-select').on('keyup', () =>{
@@ -136,6 +150,38 @@ folderSorter
   sortUrls(e.target.value)
 })
 
+
+
+$('.folder-title').find('click',(e) =>{
+  console.log(e.target.innerText)
+  // getAllUrls()
+  //   .then((urls) =>{
+  //     let match = urls.find((url)=>{
+  //       return url.shortened_url === e.target.value
+  //     })
+  //   })
+  // updatePopularity(e.target.value)
+})
+
+const urlList = (urls) =>{
+  urls.forEach((url) =>{
+    let shortUrl = url.shortened_url
+    $('.url-list').append(`<div class= 'appended-url'>
+      <div>
+        <h4>Title: </h4>
+        <p>${url.title}</p>
+      </div>
+      <div>
+        <h4>ShortLink:</h4>
+        <a href= ${shortUrl} id ='test-button' class="short-url">/${shortUrl}</a>
+      </div>`)
+  })
+}
+
+const removeUrls = () =>{
+  $('.url-list').empty()
+}
+
 const sortUrls = (sortType) => {
   let urls = urlsArray
   let sortedUrls = urls.sort((a, b) => {
@@ -145,32 +191,45 @@ const sortUrls = (sortType) => {
   urlList(sortedUrls)
 }
 
-const urlList = (urls) =>{
-  urls.forEach((url) =>{
-    let shortUrl = url.shortened_url
-
-    $('.url-list').append(`<div class= 'appended-url'>
-                            <div>
-                              <h4>Title: </h4>
-                              <p>${url.title}</p>
-                            </div>
-                            <div>
-                              <h4>ShortLink: </h4>
-                              <a href='/${shortUrl}' class="short-url">/${shortUrl}</a>
-                            </div>`)
-  })
+const updatePopularity = (shortened_url) =>{
+  fetch('api/v1/urls/popularity', {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      shortened_url: `${shortened_url}`
+    })
+  }).then((response) => console.log(response))
+    .catch((error) => console.log(error))
 }
 
-const removeUrls = () =>{
-  $('.url-list').empty()
+const isValid = (element, index, array) =>{
+  return element !== ' ' && element !== ''
+}
+
+const urlValid = (url) =>{
+  let modifiedUrl
+  let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
+
+  if(!url.includes('http') && !url.includes('www.') && regex.test(url)){
+    modifiedUrl = 'http://www.'.concat(url)
+  } else if (!url.includes('http://') && regex.test(url)) {
+    modifiedUrl = 'http://'.concat(url)
+  } else if (regex.test(url)){
+    modifiedUrl = url
+  }
+
+  return modifiedUrl
 }
 
 const enableCheck = () =>{
+
+  let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
+
   let folder = folderSelect.val()
   let url = $('#url').val()
   let title = $('#title').val()
 
-  if(folder.length > 0 && url.length > 0 && title.length > 0){
+  if([folder, title].every(isValid) && regex.test(url)){
     dataSubmit.prop('disabled', false)
   } else {
     dataSubmit.prop('disabled', true)
