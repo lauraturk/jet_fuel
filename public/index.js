@@ -1,4 +1,3 @@
-
 let foldersArray = []
 let urlsArray = []
 const folderForm = $('#folder-form')
@@ -54,8 +53,6 @@ const addUrls = (folder, url, urlTitle) =>{
     .catch(error => console.log(error))
 }
 
-
-
 folderForm
 .on('change', (e) => {
   e.preventDefault()
@@ -103,10 +100,7 @@ dataSubmit.click((e)=>{
   let url = $('#url').val()
   let title = $('#title').val()
 
-
-
   if([url, folder, title].every(isValid)){
-
     let modifiedUrl = urlValid(url)
 
     addUrls(folder, modifiedUrl, title)
@@ -140,7 +134,7 @@ dataSubmit.click((e)=>{
   $('#title').val('')
 })
 
-$('#url, #title, #folder-select').on('keyup', () =>{
+$('#url, #title, #folder-select').on('keyup blur', () =>{
   enableCheck()
 })
 
@@ -148,19 +142,6 @@ folderSorter
 .on('change', (e) => {
   e.preventDefault()
   sortUrls(e.target.value)
-})
-
-
-
-$('.folder-title').find('click',(e) =>{
-  console.log(e.target.innerText)
-  // getAllUrls()
-  //   .then((urls) =>{
-  //     let match = urls.find((url)=>{
-  //       return url.shortened_url === e.target.value
-  //     })
-  //   })
-  // updatePopularity(e.target.value)
 })
 
 const urlList = (urls) =>{
