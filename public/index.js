@@ -1,41 +1,29 @@
-let foldersArray = []
-let urlsArray = []
-const folderForm = $('#folder-form')
-const folderSelect = $('#folder-select')
-const dataSubmit = $('#submit-url')
-const folderSorter = $('#folder-sort')
-const shortUrl = $('.short-url')
+let chosenFolderName = ''
 
 $(document).ready(() =>{
+  return getAllFolders()
+})
+
+const getAllFolders = () => {
   fetch('/api/v1/folders', {
     method: 'GET',
   })
-    .then((data) => data.json())
-    .then((folders) => {
-      foldersArray = folders
-      folders.forEach((folder) => {
-        $('#folders').append(`<option value="${folder.folder_name}"/>`)
-      })
-    })
-    .catch(error => console.log(error))
-})
-
-const getAllUrls = () =>{
-  fetch('/api/v1/urls', {
-    method: 'GET',
+  .then((data) => data.json())
+  .then((folders) => {
+    $('#folders-holder').append(`${renderFolders(folders)}`)
   })
-    .then((data) => data.json())
-    .then((urls) => {
-      console.log(urls)
-    })
-    .catch(error => console.log(error))
+  .catch(error => console.log(error))
 }
 
 const getUrlsByFolder = (folderId) =>{
   return fetch(`/api/v1/folders/${folderId}/urls`, {
-  method: 'GET',
+    method: 'GET',
   })
   .then((data) => data.json())
+  .then((urls) => {
+    $('.folder-title').append(`${renderUrls(urls)}`)
+    displayUrls()
+  })
   .catch(error => console.log(error))
 }
 
@@ -49,138 +37,95 @@ const addUrls = (folder, url, urlTitle) =>{
       title: `${urlTitle}`
     })
   })
-    .then((response) => console.log(response))
+    .then((data) => console.log(data))
     .catch(error => console.log(error))
 }
 
-folderForm
-.on('change', (e) => {
-  e.preventDefault()
-  let folderVal = folderSelect.val()
+const visitIncrement = (target) => {
+  return fetch(`/api/v1/urls/${target}/visits`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'}
 
-  let matchFolder = foldersArray.find((folder) =>{
-    return folder.folder_name.toString() === folderVal.trim()
   })
-
-  if(matchFolder){
-    $('.folder-title').replaceWith(`<div class = "folder-title">
-      <p>Selected Folder:</p>
-      <h2>${e.target.value}</h2>
-    </div>`)
-
-    getUrlsByFolder(matchFolder.id)
-      .then((urls) =>{
-        urlsArray = urls
-        $('.folder-title').append(`<div class = 'url-list'></div>`)
-        urlList(urls)
-      })
-      .catch((error) => console.log(error))
-    $('.folder-content').addClass('active')
-    $('.url-inputs').addClass('active')
-    $('#folder-sort').removeClass('sort-remove').addClass('sort-active')
-  } else if (!matchFolder) {
-    $('.folder-title').replaceWith(`<div class = "folder-title">
-      <p>Create New Folder:</p>
-      <h2>${e.target.value}</h2>
-    </div>`)
-    $('.folder-content').addClass('active')
-    $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
-    $('.url-inputs').addClass('active')
-  }
-})
-.on('submit', (e) => {
-  e.preventDefault();
-})
-
-
-
-dataSubmit.click((e)=>{
-  e.preventDefault()
-  let folder = folderSelect.val()
-  let url = $('#url').val()
-  let title = $('#title').val()
-
-  if([url, folder, title].every(isValid)){
-    let modifiedUrl = urlValid(url)
-
-    addUrls(folder, modifiedUrl, title)
-      .then(() =>{
-      let matchFolder = foldersArray.find((arrFolder) =>{
-        return arrFolder.folder_name.toString() === folder.trim()
-      })
-
-      if (matchFolder){
-        getUrlsByFolder(matchFolder.id)
-        .then((urls) =>{
-          console.log(urls, 'in matchFolder line 112')
-          let shortUrl = urls[urls.length-1].shortened_url
-          $('.url-list').append(`<div class= 'appended-url'>
-            <div>
-              <h4>Title: </h4>
-              <p>${urls[urls.length-1].title}</p>
-            </div>
-            <div>
-              <h4>ShortLink: </h4>
-              <a href= ${shortUrl} id ='test-button' class="short-url">/${shortUrl}</a>
-            </div>`)
-        })
-        .catch((error) => console.log(error))
-      }
-    })
-  }
-
-  folderSelect.val('')
-  $('#url').val('')
-  $('#title').val('')
-})
-
-$('#url, #title, #folder-select').on('keyup blur', () =>{
-  enableCheck()
-})
-
-folderSorter
-.on('change', (e) => {
-  e.preventDefault()
-  sortUrls(e.target.value)
-})
-
-const urlList = (urls) =>{
-  urls.forEach((url) =>{
-    let shortUrl = url.shortened_url
-    $('.url-list').append(`<div class= 'appended-url'>
-      <div>
-        <h4>Title: </h4>
-        <p>${url.title}</p>
-      </div>
-      <div>
-        <h4>ShortLink:</h4>
-        <a href= ${shortUrl} id ='test-button' class="short-url">/${shortUrl}</a>
-      </div>`)
-  })
+  .then((data) => console.log(data))
+  .catch((error) => console.log(error))
 }
 
-const removeUrls = () =>{
-  $('.url-list').empty()
+const renderFolders = (folders) => {
+  const printFolders = folders.map((folder) => {
+    return `<div class = "retrieved-folder" id=${folder.id} data-name="${folder.folder_name}">
+              <img src="./folder-icon.svg" class="folder-svg" alt="folder icon">
+              <p>${folder.folder_name}</p>
+            </div>`
+  }).join(" ")
+  return printFolders
+}
+
+const renderUrls = (urls) => {
+  removeUrls()
+  const printUrls = urls.map((url) => {
+    return `<div class = "appended-url" data-popularity=${url.popularity} data-created_at=${url.created_at} >
+              <h4>${url.title}</h4>
+              <a id=${url.id} href=${url.shortened_url}>${url.shortened_url}</a>
+            </div>`
+  }).join(" ")
+  return printUrls
+}
+
+const displayUrls = () => {
+  const urlListLength = $('.folder-content').find('.appended-url').length
+
+  $('.folder-content').addClass('active')
+  // $('.url-inputs').addClass('active')
+  urlListLength > 1 ? $('#folder-sort').removeClass('sort-remove').addClass('sort-active') :
+    $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
+}
+
+const removeUrls = () => {
+  $('.folder-title').empty()
+  $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
+}
+
+const removeFolders = () => {
+  $('#folders-holder').empty()
+}
+
+const clearInputs = () => {
+  $('#folder-select').val('')
+  $('#url').val('')
+  $('#title').val('')
+}
+
+const cleanUrls = () => {
+  const foundUrls = $('.folder-content').find('.appended-url')
+  const urlsKeys = (Object.keys(foundUrls).filter(key => key.length <= 2))
+
+  return urlsKeys.map((key) => {
+    return {
+      id: parseInt(foundUrls[key].id),
+      popularity: parseInt(foundUrls[key].dataset.popularity),
+      created_at: parseInt(foundUrls[key].id),
+      title: foundUrls[key].children[0].innerText,
+      shortened_url: foundUrls[key].children[1].text
+    }
+  })
 }
 
 const sortUrls = (sortType) => {
-  let urls = urlsArray
-  let sortedUrls = urls.sort((a, b) => {
-    return  b[sortType] - a[sortType]
-  })
-  removeUrls()
-  urlList(sortedUrls)
-}
+  const urlsToSort = cleanUrls()
 
-const updatePopularity = (shortened_url) =>{
-  fetch('api/v1/urls/popularity', {
-    method: 'PUT',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      shortened_url: `${shortened_url}`
+  let sortedUrls;
+
+  if(urlsToSort[0][sortType] > urlsToSort[1][sortType]) {
+    sortedUrls = urlsToSort.sort((a,b) => {
+      return a[sortType] - b[sortType]
     })
-  }).then((response) => console.log(response))
-    .catch((error) => console.log(error))
+  } else {
+    sortedUrls = urlsToSort.sort((a, b) => {
+      return  b[sortType] - a[sortType]
+    })
+  }
+  $('.folder-title').append(`${renderUrls(sortedUrls)}`)
 }
 
 const isValid = (element, index, array) =>{
@@ -203,10 +148,12 @@ const urlValid = (url) =>{
 }
 
 const enableCheck = () =>{
+  const dataSubmit = $('#submit-url')
+  const folderSelect = $('#folder-select')
 
   let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
 
-  let folder = folderSelect.val()
+  let folder = folderSelect.val() || chosenFolderName.length
   let url = $('#url').val()
   let title = $('#title').val()
 
@@ -216,3 +163,49 @@ const enableCheck = () =>{
     dataSubmit.prop('disabled', true)
   }
 }
+
+const successAlert = (title, folder) => {
+  $('.success-alert').replaceWith(`<div class="success-alert" id>${title} added to ${folder}</div>`)
+}
+
+const clearSuccessAlert = () => {
+  $('.success-alert').replaceWith('<div class="success-alert"></div>')
+}
+
+$('#url, #title, #folder-select').on('keyup', () =>{
+  enableCheck()
+  // clearSuccessAlert()
+})
+
+$('#folders-holder').on('click', '.retrieved-folder', function(e) {
+  const parsedId = parseInt(this.id, 10)
+
+  getUrlsByFolder(parsedId)
+  return chosenFolderName = this.dataset.name
+})
+
+$('.folder-title').on('click', 'a', function(e) {
+  visitIncrement(this.id)
+})
+
+$('.folder-content').on('click', (e) => sortUrls(e.target.value))
+
+$('#submit-url').click((e) => {
+  e.preventDefault()
+
+  let folder = !$('#folder-select').val() ? chosenFolderName : $('#folder-select').val()
+  let url = $('#url').val()
+  let title = $('#title').val()
+
+  if([url, folder, title].every(isValid)){
+    let modifiedUrl = urlValid(url)
+
+    addUrls(folder, modifiedUrl, title)
+      .then(() => {
+        successAlert(title, folder)
+        removeFolders()
+        getAllFolders()
+      })
+  }
+  clearInputs()
+})

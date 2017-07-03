@@ -11,13 +11,13 @@
     <h2>URL Shortener: Get yer URLs Shortened Here</h2>
     <section class = "folder-select-container">
       <form id = "folder-form">
-        <label>Select a Folder, or Create a New One</label>
-        <input id = "folder-select" class = "target" type = "text" list = "folders" placeholder = "Choose a Folder"/>
-        <datalist id = "folders" class = "target">
-
-        </datalist>
+        <label><h3>Create a New Folder Or Choose One Below</h3></label>
+        <input id = "folder-select" class = "target" type = "text" placeholder = "Create a Folder">
+        <!-- <input id = "folder-create" class = "target" type = "submit"> -->
       </form>
     </section>
+    <h3>Choose an Existing Folder</h2>
+    <div id = "folders-holder"></div>
     <section class = "folder-content">
       <div class = "folder-title"></div>
         <form id = "folder-sort">
@@ -28,6 +28,7 @@
         <input type = "radio" id = "recent" name = "sort" value = "created_at"/>
       </form>
     </section>
+    <div class = "success-alert"></div>
     <section class = "url-shortening">
       <form>
         <div class = "url-inputs">
