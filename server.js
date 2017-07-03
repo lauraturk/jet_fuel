@@ -27,12 +27,14 @@ app.get('/api/v1/folders', (request, response) => {
         response.status(200).json(folders)
       } else {
         response.status(404).json({
-          error: 'No Folders Found'
+          error: ' 404: No Folders Found'
         })
       }
     })
     .catch((error) => {
-      response.status(500).json({error})
+      response.status(500).json({
+        error: '500: Internal Error retrieving folders.'
+      })
     })
 })
 
@@ -43,12 +45,14 @@ app.get('/api/v1/folders/:id', (request, response) => {
         response.status(200).json(folders)
       } else {
         response.status(404).json({
-          error: 'No Folders Found'
+          error: '404: No Folders Found'
         })
       }
     })
     .catch((error) => {
-      response.status(500).json({error})
+      response.status(500).json({
+        error: "500: Internal error retrieving specific folder by ID. The ID should be a numerical value."
+      })
     })
 })
 
@@ -59,12 +63,14 @@ app.get('/api/v1/folders/:id/urls', (request, response) => {
         response.status(200).json(urls)
       } else {
         response.status(404).json({
-          error: 'No Urls Found'
+          error: '404: No Urls Found'
         })
       }
     })
     .catch((error) => {
-      response.status(500).json({error})
+      response.status(500).json({
+        error: '500: Internal error retrieving urls by folder ID. The ID should be a numerical value'
+      })
     })
 })
 
@@ -75,12 +81,14 @@ app.get('/api/v1/urls', (request, response) => {
         response.status(200).json(urls)
       } else {
         response.status(404).json({
-          error: 'No Urls Found'
+          error: '404: No Urls Found'
         })
       }
     })
     .catch((error) => {
-      response.status(500).json({error})
+      response.status(500).json({
+        error: '500: Internal error retrieving all urls.'
+      })
     })
 })
 
@@ -91,12 +99,14 @@ app.get('/api/v1/urls/:id', (request, response) => {
         response.status(200).json(urls[0])
       } else {
         response.status(404).json({
-          error: 'No Urls Found'
+          error: '404: No Urls Found'
         })
       }
     })
     .catch((error) => {
-      response.status(500).json({error})
+      response.status(500).json({
+        error: '500: Internal error retrieving url by a specific ID. IDs should be a numerical value'
+      })
     })
 })
 
@@ -116,7 +126,7 @@ const redirectUrl = (req, res) => {
         return res.redirect(301, `${data[0].original_url}`)
       } else {
         return res.status(404).json({
-          error: 'Page not found'
+          error: '404: Page not found'
         })
       }
     })
@@ -130,7 +140,9 @@ app.put('/api/v1/urls/popularity', (request, response) => {
   //     res.status(201).json({ response: 'click_count successfully incremented' })
   //   })
   //   .catch( error => {
-  //     res.status(500).json({ error });
+  //     res.status(422).json({
+  //   error: '422: Internal error increasing the url's popularity.'
+  // });
   //   })
 })
 
@@ -138,16 +150,17 @@ app.get('/:short_url', (request, response) =>{
   database('urls').where('shortened_url', request.params.short_url).select()
     .then((data) => {
       if(data.length){
-        // return response.status(200)
         return response.redirect(301, `${data[0].original_url}`)
       } else {
         return response.status(404).json({
-          error: 'Page not found'
+          error: '404: Page not found'
         })
       }
     })
     .catch((error) =>{
-      response.status(500).json({error})
+      response.status(500).json({
+        error: '500: Internal Error redirecting to original url. The page may not exist or the short url may be invalid.'
+      })
     })
 })
 
@@ -165,8 +178,6 @@ const addFoldersAndUrls = (data, response) => {
 }
 
 const createUrl = (url, folderId) =>{
-  console.log('created a url', url.original_url)
-
   return database('urls').insert({
     original_url: url.original_url,
     folder_id: folderId,
@@ -176,7 +187,6 @@ const createUrl = (url, folderId) =>{
 }
 
 const createShortUrl = (id) => {
-  console.log('created a short url')
   const integerId = id[0]
   const shortenedUrl = encodeUrl(id)
   return database('urls').where('id', '=', integerId).update({shortened_url: `${shortenedUrl}`}, 'shortened_url')
@@ -205,7 +215,9 @@ app.post('/api/v1/folders', (request, response) => {
             response.status(201).json(urlData)
           })
           .catch((error) =>{
-            response.status(500).json({error})
+            response.status(500).json({
+              error: '500: There was an internal error creating a new folder and adding a new url. Please try again.'
+            })
           })
       } else {
         createUrl(data, match.id)
@@ -215,13 +227,17 @@ app.post('/api/v1/folders', (request, response) => {
                 response.status(201).json({ short_url: `${shortened_url}`})
               })
               .catch((error) => {
-                response.status(500).json({ error })
+                response.status(500).json({
+                   error: '500: There was an internal error creating a new short-url.'
+                 })
               })
             })
           }
     })
     .catch(error => {
-      response.status(500).json({ error })
+      response.status(500).json({
+        error: '500: There was an internal error retrieving the folders database. '
+      })
     })
 })
 
