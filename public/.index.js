@@ -7,38 +7,38 @@ const dataSubmit = $('#submit-url')
 const folderSorter = $('#folder-sort')
 const shortUrl = $('.short-url')
 
-$(document).ready(() =>{
-  fetch('/api/v1/folders', {
-    method: 'GET',
-  })
-    .then((data) => data.json())
-    .then((folders) => {
-      foldersArray = folders
-      folders.forEach((folder) => {
-        $('#folders').append(`<option value="${folder.folder_name}"/>`)
-      })
-    })
-    .catch(error => console.log(error))
-})
+// $(document).ready(() =>{
+//   fetch('/api/v1/folders', {
+//     method: 'GET',
+//   })
+//     .then((data) => data.json())
+//     .then((folders) => {
+//       foldersArray = folders
+//       folders.forEach((folder) => {
+//         $('#folders').append(`<option value="${folder.folder_name}"/>`)
+//       })
+//     })
+//     .catch(error => console.log(error))
+// })
 
-const getAllUrls = () =>{
-  fetch('/api/v1/urls', {
-    method: 'GET',
-  })
-    .then((data) => data.json())
-    .then((urls) => {
-      console.log(urls)
-    })
-    .catch(error => console.log(error))
-}
+// const getAllUrls = () =>{
+//   fetch('/api/v1/urls', {
+//     method: 'GET',
+//   })
+//     .then((data) => data.json())
+//     .then((urls) => {
+//       console.log(urls)
+//     })
+//     .catch(error => console.log(error))
+// }
 
-const getUrlsByFolder = (folderId) =>{
-  return fetch(`/api/v1/folders/${folderId}/urls`, {
-  method: 'GET',
-  })
-  .then((data) => data.json())
-  .catch(error => console.log(error))
-}
+// const getUrlsByFolder = (folderId) =>{
+//   return fetch(`/api/v1/folders/${folderId}/urls`, {
+//   method: 'GET',
+//   })
+//   .then((data) => data.json())
+//   .catch(error => console.log(error))
+// }
 
 const addUrls = (folder, url, urlTitle) =>{
    return fetch('/api/v1/folders/', {
@@ -103,8 +103,6 @@ dataSubmit.click((e)=>{
   let url = $('#url').val()
   let title = $('#title').val()
 
-
-
   if([url, folder, title].every(isValid)){
 
     let modifiedUrl = urlValid(url)
@@ -144,11 +142,11 @@ $('#url, #title, #folder-select').on('keyup', () =>{
   enableCheck()
 })
 
-folderSorter
-.on('change', (e) => {
-  e.preventDefault()
-  sortUrls(e.target.value)
-})
+// folderSorter
+// .on('change', (e) => {
+//   e.preventDefault()
+//   sortUrls(e.target.value)
+// })
 
 
 
@@ -178,18 +176,18 @@ $('.folder-title').find('click',(e) =>{
 //   })
 // }
 
-const removeUrls = () =>{
-  $('.url-list').empty()
-}
-
-const sortUrls = (sortType) => {
-  let urls = urlsArray
-  let sortedUrls = urls.sort((a, b) => {
-    return  b[sortType] - a[sortType]
-  })
-  removeUrls()
-  urlList(sortedUrls)
-}
+// const removeUrls = () =>{
+//   $('.url-list').empty()
+// }
+//
+// const sortUrls = (sortType) => {
+//   let urls = urlsArray
+//   let sortedUrls = urls.sort((a, b) => {
+//     return  b[sortType] - a[sortType]
+//   })
+//   removeUrls()
+//   urlList(sortedUrls)
+// }
 
 const updatePopularity = (shortened_url) =>{
   fetch('api/v1/urls/popularity', {
@@ -202,36 +200,36 @@ const updatePopularity = (shortened_url) =>{
     .catch((error) => console.log(error))
 }
 
-const isValid = (element, index, array) =>{
-  return element !== ' ' && element !== ''
-}
-
-const urlValid = (url) =>{
-  let modifiedUrl
-  let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
-
-  if(!url.includes('http') && !url.includes('www.') && regex.test(url)){
-    modifiedUrl = 'http://www.'.concat(url)
-  } else if (!url.includes('http://') && regex.test(url)) {
-    modifiedUrl = 'http://'.concat(url)
-  } else if (regex.test(url)){
-    modifiedUrl = url
-  }
-
-  return modifiedUrl
-}
-
-const enableCheck = () =>{
-
-  let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
-
-  let folder = folderSelect.val()
-  let url = $('#url').val()
-  let title = $('#title').val()
-
-  if([folder, title].every(isValid) && regex.test(url)){
-    dataSubmit.prop('disabled', false)
-  } else {
-    dataSubmit.prop('disabled', true)
-  }
-}
+// const isValid = (element, index, array) =>{
+//   return element !== ' ' && element !== ''
+// }
+//
+// const urlValid = (url) =>{
+//   let modifiedUrl
+//   let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
+//
+//   if(!url.includes('http') && !url.includes('www.') && regex.test(url)){
+//     modifiedUrl = 'http://www.'.concat(url)
+//   } else if (!url.includes('http://') && regex.test(url)) {
+//     modifiedUrl = 'http://'.concat(url)
+//   } else if (regex.test(url)){
+//     modifiedUrl = url
+//   }
+//
+//   return modifiedUrl
+// }
+//
+// const enableCheck = () =>{
+//
+//   let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
+//
+//   let folder = folderSelect.val()
+//   let url = $('#url').val()
+//   let title = $('#title').val()
+//
+//   if([folder, title].every(isValid) && regex.test(url)){
+//     dataSubmit.prop('disabled', false)
+//   } else {
+//     dataSubmit.prop('disabled', true)
+//   }
+// }

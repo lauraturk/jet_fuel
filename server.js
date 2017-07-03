@@ -68,44 +68,44 @@ app.get('/api/v1/folders/:id/urls', (request, response) => {
     })
 })
 
-app.get('/api/v1/urls', (request, response) => {
-  database('urls').select()
-    .then((urls) => {
-      if(urls.length){
-        response.status(200).json(urls)
-      } else {
-        response.status(404).json({
-          error: 'No Urls Found'
-        })
-      }
-    })
-    .catch((error) => {
-      response.status(500).json({error})
-    })
-})
+// app.get('/api/v1/urls', (request, response) => {
+//   database('urls').select()
+//     .then((urls) => {
+//       if(urls.length){
+//         response.status(200).json(urls)
+//       } else {
+//         response.status(404).json({
+//           error: 'No Urls Found'
+//         })
+//       }
+//     })
+//     .catch((error) => {
+//       response.status(500).json({error})
+//     })
+// })
 
-app.get('/api/v1/urls/:id', (request, response) => {
-  database('urls').where('id', request.params.id).select()
-    .then((urls) => {
-      if(urls.length){
-        response.status(200).json(urls[0])
-      } else {
-        response.status(404).json({
-          error: 'No Urls Found'
-        })
-      }
-    })
-    .catch((error) => {
-      response.status(500).json({error})
-    })
-})
+// app.get('/api/v1/urls/:id', (request, response) => {
+//   database('urls').where('id', request.params.id).select()
+//     .then((urls) => {
+//       if(urls.length){
+//         response.status(200).json(urls[0])
+//       } else {
+//         response.status(404).json({
+//           error: 'No Urls Found'
+//         })
+//       }
+//     })
+//     .catch((error) => {
+//       response.status(500).json({error})
+//     })
+// })
 
-app.post('/api/v1/urls/:id', (req, res) => {
-  const { id } = req.params
-  database('urls').where('id', id).increment('popularity', 1)
-  .then((data) => console.log(data))
-  .catch((error) => console.log(error))
-})
+// app.post('/api/v1/urls/:id', (req, res) => {
+//   const { id } = req.params
+//   database('urls').where('id', id).increment('popularity', 1)
+//   .then((data) => console.log(data))
+//   .catch((error) => console.log(error))
+// })
 
 
 const redirectUrl = (req, res) => {
@@ -176,7 +176,6 @@ const createUrl = (url, folderId) =>{
 }
 
 const createShortUrl = (id) => {
-  console.log('created a short url')
   const integerId = id[0]
   const shortenedUrl = encodeUrl(id)
   return database('urls').where('id', '=', integerId).update({shortened_url: `${shortenedUrl}`}, 'shortened_url')
