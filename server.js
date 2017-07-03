@@ -7,7 +7,7 @@ const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
-const host = process.env.DOMAIN || 'http://localhost:3000/api'
+const host = process.env.DOMAIN || 'http://localhost:3000/'
 
 const encodeUrl = require('./shortener')
 
@@ -60,7 +60,7 @@ app.get('/api/v1/folders/:id/urls', (request, response) => {
   database('urls').where('folder_id', request.params.id).select()
     .then((urls) => {
       if(urls.length){
-        response.status(200).json(urls)
+        response.status(200).send(addUrl(urls))
       } else {
         response.status(404).json({
           error: '404: No Urls Found'
@@ -203,6 +203,12 @@ app.post('/api/v1/folders', (request, response) => {
     })
 })
 
+addUrl = (urlArray) => {
+  const keys = Object.keys(urlArray)
+  return keys.map(url => {
+  return Object.assign({}, urlArray[url], {urlAddOn: host})
+  })
+}
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`)

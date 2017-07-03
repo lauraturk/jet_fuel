@@ -10,8 +10,8 @@ exports.seed = (knex, Promise) => {
         }, 'id')
         .then(folder =>{
           return knex('urls').insert({
-            original_url: 'www.idontknowwhattodowithmylife.com',
-            shortened_url: 'www.idk.com',
+            original_url: 'idontknowwhattodowithmylife.com',
+            shortened_url: '999',
             folder_id: folder[0],
             title: 'I Dont Know What to do with my life',
             popularity: 0

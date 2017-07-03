@@ -56,6 +56,11 @@ input::placeholder{
   margin: 10px;
 }
 
+.active-folder {
+  border-bottom: 4px solid #7dcfe8;
+
+}
+
 .active {
   display: block;
 }
