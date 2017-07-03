@@ -7,16 +7,53 @@
 
 }
 
-body{
+body {
   background-color: #fefefe;
+  margin: 0;
+  background-image: url('./joanna-kosinska-129039.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  height: 100%;
 }
 
 label{
   margin-right: 15px;
 }
 
+input {
+  opacity: .75;
+}
+
 input::placeholder{
   color: #cbcbcb;
+}
+
+h1, h2 {
+  max-width: 50%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  max-width: 50%;
+  font-size: 16px;
+}
+
+h3 {
+  text-align: right;
+  font-size: 14px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+header {
+  align-items: center;
+  display: flex;
+  justify-content: space-around;
+  /*background-color: #7dcfe8;*/
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .folder-select-container{
@@ -32,12 +69,14 @@ input::placeholder{
   text-align: left;
 }
 
+.folder-title {
+  text-align: center;
+}
+
 .folder-content {
   margin-left: auto;
   margin-right: auto;
   width: 75%;
-  background-color: #eeeeef;
-  box-shadow: 0px 0px 1px #222;
   display: none;
   margin-top: 25px;
 }
@@ -58,7 +97,6 @@ input::placeholder{
 
 .active-folder {
   border-bottom: 4px solid #7dcfe8;
-
 }
 
 .active {
@@ -101,26 +139,21 @@ input::placeholder{
 }
 
 .appended-url{
-  text-align: left;
-  width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 12px;
+  background-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0px 0px 1px #222;
+  display: flex;
+  flex-direction:row;
+  justify-content: space-between;
+  margin: 12px auto;
+  max-width: 80%;
+  min-width: 290px;
+  padding: 10px;
+  text-align: justify;
 }
 
-.appended-url h4, p{
+.appended-url h4, p, a{
   display: inline-block;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.appended-url h4{
-  margin-right: 5px;
-}
-
-.appended-url div{
-  margin-top: 2px;
-  margin-bottom: 5px;
+  margin: 5px 0;
 }
 
 .sort-remove{
@@ -160,4 +193,10 @@ input::placeholder{
   background: -webkit-linear-gradient(top, #a4bbc2 0%,#7297a6 100%);
   background: linear-gradient(to bottom, #a4bbc2 0%,#7297a6 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a4bbc2', endColorstr='#7297a6',GradientType=0 );
+}
+
+@media (max-width: 500px) {
+  h2 {
+    display: none;
+  }
 }
