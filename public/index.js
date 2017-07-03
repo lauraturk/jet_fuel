@@ -86,6 +86,7 @@ const displayUrls = () => {
 
 const removeUrls = () => {
   $('.folder-title').empty()
+  // $('.retrieved-folder').removeClass('active-folder')
 }
 
 const removeFolders = () => {
@@ -176,7 +177,6 @@ const clearSuccessAlert = () => {
 
 $('#url, #title, #folder-select').on('keyup', () =>{
   enableCheck()
-  // clearSuccessAlert()
 })
 
 $('#folders-holder').on('click', '.retrieved-folder', function(e) {
@@ -184,16 +184,18 @@ $('#folders-holder').on('click', '.retrieved-folder', function(e) {
 
   const selectedFolder = $( this )
 
-  if(!selectedFolder.hasClass('.active-folder')) {
+  if(!selectedFolder.hasClass('active-folder')) {
     getUrlsByFolder(parsedId)
     selectedFolder.addClass('active-folder')
   } else {
     selectedFolder.removeClass('active-folder')
     removeUrls()
+    displayUrls()
   }
 
   return chosenFolderName = this.dataset.name
 })
+
 
 $('.folder-title').on('click', 'a', function(e) {
   visitIncrement(this.id)
@@ -217,6 +219,7 @@ $('#submit-url').click((e) => {
         removeFolders()
         getAllFolders()
         removeUrls()
+        displayUrls()
         $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
       })
   }
