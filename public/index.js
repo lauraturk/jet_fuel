@@ -45,6 +45,7 @@ const visitIncrement = (target) => {
   return fetch(`/api/v1/urls/${target}/visits`, {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'}
+
   })
   .then((data) => console.log(data))
   .catch((error) => console.log(error))
@@ -93,9 +94,6 @@ const clearInputs = () => {
   $('#folder-select').val('')
   $('#url').val('')
   $('#title').val('')
-  $('.submit-url').prop('disabled', true)
-  chosenFolderName = ''
-  removeUrls()
 }
 
 const cleanUrls = () => {
