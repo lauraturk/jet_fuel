@@ -21,6 +21,7 @@ const getUrlsByFolder = (folderId) =>{
   })
   .then((data) => data.json())
   .then((urls) => {
+    console.log(urls)
     $('.folder-title').append(`${renderUrls(urls)}`)
     displayUrls()
   })
@@ -64,9 +65,11 @@ const renderFolders = (folders) => {
 const renderUrls = (urls) => {
   removeUrls()
   const printUrls = urls.map((url) => {
+    let fullUrl = !url.folder_id ? url.shortened_url : `${url.urlAddOn}${url.shortened_url}`
     return `<div class = "appended-url" data-popularity=${url.popularity} data-created_at=${url.created_at} >
               <h4>${url.title}</h4>
-              <a id=${url.id} href=${url.shortened_url}>${url.shortened_url}</a>
+              <a id=${url.id} href=${url.shortened_url}>${fullUrl}</a>
+              <p>Visits: ${url.popularity}</p>
             </div>`
   }).join(" ")
   return printUrls
@@ -83,7 +86,6 @@ const displayUrls = () => {
 
 const removeUrls = () => {
   $('.folder-title').empty()
-  $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
 }
 
 const removeFolders = () => {
@@ -102,9 +104,9 @@ const cleanUrls = () => {
 
   return urlsKeys.map((key) => {
     return {
-      id: parseInt(foundUrls[key].id),
+      id: parseInt(foundUrls[key].children[1].id),
       popularity: parseInt(foundUrls[key].dataset.popularity),
-      created_at: parseInt(foundUrls[key].id),
+      created_at: parseInt(foundUrls[key].children[1].id),
       title: foundUrls[key].children[0].innerText,
       shortened_url: foundUrls[key].children[1].text
     }
@@ -180,7 +182,16 @@ $('#url, #title, #folder-select').on('keyup', () =>{
 $('#folders-holder').on('click', '.retrieved-folder', function(e) {
   const parsedId = parseInt(this.id, 10)
 
-  getUrlsByFolder(parsedId)
+  const selectedFolder = $( this )
+
+  if(!selectedFolder.hasClass('.active-folder')) {
+    getUrlsByFolder(parsedId)
+    selectedFolder.addClass('active-folder')
+  } else {
+    selectedFolder.removeClass('active-folder')
+    removeUrls()
+  }
+
   return chosenFolderName = this.dataset.name
 })
 
@@ -205,6 +216,8 @@ $('#submit-url').click((e) => {
         successAlert(title, folder)
         removeFolders()
         getAllFolders()
+        removeUrls()
+        $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
       })
   }
   clearInputs()
