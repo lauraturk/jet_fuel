@@ -77,6 +77,10 @@ const removeUrls = () => {
   $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
 }
 
+const removeFolders = () => {
+  $('#folders-holder').empty()
+}
+
 const clearInputs = () => {
   $('#folder-select').val('')
   $('#url').val('')
@@ -154,8 +158,18 @@ const enableCheck = () =>{
   }
 }
 
+const successAlert = (title, folder) => {
+  console.log(title, folder)
+  $('.success-alert').replaceWith(`<div class="success-alert" id>${title} added to ${folder}</div>`)
+}
+
+const clearSuccessAlert = () => {
+  $('.success-alert').replaceWith('<div class="success-alert"></div>')
+}
+
 $('#url, #title, #folder-select').on('keyup', () =>{
   enableCheck()
+  clearSuccessAlert()
 })
 
 $('#folders-holder').on('click', '.retrieved-folder', function(e) {
@@ -178,7 +192,11 @@ $('#submit-url').click((e) => {
     let modifiedUrl = urlValid(url)
 
     addUrls(folder, modifiedUrl, title)
+      .then(() => {
+        successAlert(title, folder)
+        removeFolders()
+        getAllFolders()
+      })
   }
-
   clearInputs()
 })
