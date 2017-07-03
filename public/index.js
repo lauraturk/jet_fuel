@@ -37,9 +37,17 @@ const addUrls = (folder, url, urlTitle) =>{
       title: `${urlTitle}`
     })
   })
-    .then((data) => data.json())
-    .then((returnedData) => console.log(returnedData))
+    .then((data) => console.log(data))
     .catch(error => console.log(error))
+}
+
+const visitIncrement = (target) => {
+  return fetch(`/api/v1/urls/${target}/visits`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'}
+  })
+  .then((data) => console.log(data))
+  .catch((error) => console.log(error))
 }
 
 const renderFolders = (folders) => {
@@ -55,9 +63,9 @@ const renderFolders = (folders) => {
 const renderUrls = (urls) => {
   removeUrls()
   const printUrls = urls.map((url) => {
-    return `<div class = "appended-url" id=${url.id} data-popularity=${url.popularity} data-created_at=${url.created_at} >
+    return `<div class = "appended-url" data-popularity=${url.popularity} data-created_at=${url.created_at} >
               <h4>${url.title}</h4>
-              <a href=${url.shortened_url}>${url.shortened_url}</a>
+              <a id=${url.id} href=${url.shortened_url}>${url.shortened_url}</a>
             </div>`
   }).join(" ")
   return printUrls
@@ -98,7 +106,7 @@ const cleanUrls = () => {
     return {
       id: parseInt(foundUrls[key].id),
       popularity: parseInt(foundUrls[key].dataset.popularity),
-      created_at: foundUrls[key].dataset.created_at,
+      created_at: parseInt(foundUrls[key].id),
       title: foundUrls[key].children[0].innerText,
       shortened_url: foundUrls[key].children[1].text
     }
@@ -159,7 +167,6 @@ const enableCheck = () =>{
 }
 
 const successAlert = (title, folder) => {
-  console.log(title, folder)
   $('.success-alert').replaceWith(`<div class="success-alert" id>${title} added to ${folder}</div>`)
 }
 
@@ -169,7 +176,7 @@ const clearSuccessAlert = () => {
 
 $('#url, #title, #folder-select').on('keyup', () =>{
   enableCheck()
-  clearSuccessAlert()
+  // clearSuccessAlert()
 })
 
 $('#folders-holder').on('click', '.retrieved-folder', function(e) {
@@ -177,6 +184,10 @@ $('#folders-holder').on('click', '.retrieved-folder', function(e) {
 
   getUrlsByFolder(parsedId)
   return chosenFolderName = this.dataset.name
+})
+
+$('.folder-title').on('click', 'a', function(e) {
+  visitIncrement(this.id)
 })
 
 $('.folder-content').on('click', (e) => sortUrls(e.target.value))

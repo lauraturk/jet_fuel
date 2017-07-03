@@ -68,77 +68,40 @@ app.get('/api/v1/folders/:id/urls', (request, response) => {
     })
 })
 
-// app.get('/api/v1/urls', (request, response) => {
-//   database('urls').select()
-//     .then((urls) => {
-//       if(urls.length){
-//         response.status(200).json(urls)
-//       } else {
-//         response.status(404).json({
-//           error: 'No Urls Found'
-//         })
-//       }
-//     })
-//     .catch((error) => {
-//       response.status(500).json({error})
-//     })
-// })
-
-// app.get('/api/v1/urls/:id', (request, response) => {
-//   database('urls').where('id', request.params.id).select()
-//     .then((urls) => {
-//       if(urls.length){
-//         response.status(200).json(urls[0])
-//       } else {
-//         response.status(404).json({
-//           error: 'No Urls Found'
-//         })
-//       }
-//     })
-//     .catch((error) => {
-//       response.status(500).json({error})
-//     })
-// })
-
-// app.post('/api/v1/urls/:id', (req, res) => {
-//   const { id } = req.params
-//   database('urls').where('id', id).increment('popularity', 1)
-//   .then((data) => console.log(data))
-//   .catch((error) => console.log(error))
-// })
-
-
-const redirectUrl = (req, res) => {
-  const { short_url } = req.params
-  return database('urls').where('shortened_url', short_url).select()
-    .then((data) => {
-      if(data.length){
-        return res.redirect(301, `${data[0].original_url}`)
+app.get('/api/v1/urls', (request, response) => {
+  database('urls').select()
+    .then((urls) => {
+      if(urls.length){
+        response.status(200).json(urls)
       } else {
-        return res.status(404).json({
-          error: 'Page not found'
+        response.status(404).json({
+          error: 'No Urls Found'
         })
       }
     })
-}
+    .catch((error) => {
+      response.status(500).json({error})
+    })
+})
 
-app.put('/api/v1/urls/popularity', (request, response) => {
-  console.log(request.body, 'request')
-  // let updatePopularity = parseInt(req.body.popularity) + 1
-  // database('urls').where('short_link', req.body.short_link).update('popularity', 1)
-  //   .then( thing => {
-  //     res.status(201).json({ response: 'click_count successfully incremented' })
-  //   })
-  //   .catch( error => {
-  //     res.status(500).json({ error });
-  //   })
+app.put('/api/v1/urls/:id/visits', (request, response) => {
+  const { id } = request.params
+  const parsedId = parseInt(id)
+  database('urls').where('id', parsedId).increment('popularity', 1)
+    .then((data) => {
+      return response.status(201).json(data)
+    })
+    .catch((error) => {
+      return response.status(500).json({ error: error })
+    })
 })
 
 app.get('/:short_url', (request, response) =>{
-  database('urls').where('shortened_url', request.params.short_url).select()
+  const { short_url } = request.params;
+
+  database('urls').where('shortened_url', short_url).select()
     .then((data) => {
-      if(data.length){
-        // return response.status(200)
+      if(data.length) {
         return response.redirect(301, `${data[0].original_url}`)
       } else {
         return response.status(404).json({
@@ -146,7 +109,7 @@ app.get('/:short_url', (request, response) =>{
         })
       }
     })
-    .catch((error) =>{
+    .catch((error) => {
       response.status(500).json({error})
     })
 })
@@ -158,8 +121,9 @@ const addFoldersAndUrls = (data, response) => {
       .then((urlId) => {
         createShortUrl(urlId)
         .then((urls) =>{
-          response.status(201).json(urls)
+          response.status(201).json({urls})
         })
+        .catch((error) => console.log(error))
       })
   })
 }
