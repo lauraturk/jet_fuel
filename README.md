@@ -22,6 +22,8 @@ Complete with outstanding issues
 
 ![Screengrab](http://g.recordit.co/KB4HZVNQP5.gif)
 
+## Resources:
+[Background Image courtesy of Joanna Kosinska via unsplash.com](https://unsplash.com/@joannakosinska?utm_medium=referral&utm_campaign=photographer-credit&utm_content=creditBadge)
 
 
 
