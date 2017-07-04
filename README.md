@@ -11,10 +11,10 @@ Complete with outstanding issues
 [![Stories in Ready](https://badge.waffle.io/lauraturk/jet_fuel.png?label=ready&title=Ready)](http://waffle.io/lauraturk/jet_fuel)
 
 ## Technologies:
-Knex
-Express
-jQuery
-Mocha
+* Knex
+* Express
+* jQuery
+* Mocha
 
 ## Screenshots:
 
