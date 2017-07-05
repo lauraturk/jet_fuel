@@ -127,7 +127,7 @@ describe('API Routes', () => {
       })
     })
 
-    it('should return a URL based on the URL id with /api/v1/urls/:id', (done) =>{
+    it.skip('should return a URL based on the URL id with /api/v1/urls/:id', (done) =>{
       chai.request(server)
       .get('/api/v1/urls/4/')
       .end((err, response) => {
@@ -142,7 +142,7 @@ describe('API Routes', () => {
       })
     })
 
-    it('should return a 404 a specific url is found /api/v1/urls/:id', (done) =>{
+    it.skip('should return a 404 a specific url is found /api/v1/urls/:id', (done) =>{
       chai.request(server)
       .get('/api/v1/urls/0')
       .end((err, response) => {
