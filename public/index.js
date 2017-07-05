@@ -1,8 +1,14 @@
 let chosenFolderName = ''
 
-$(document).ready(() =>{
-  return getAllFolders()
-})
+const renderFolders = (folders) => {
+  const printFolders = folders.map((folder) => {
+    return `<div class = "retrieved-folder" id=${folder.id} data-name="${folder.folder_name}">
+    <img src="./folder-icon.svg" class="folder-svg" alt="folder icon">
+    <p>${folder.folder_name}</p>
+  </div>`
+}).join(' ')
+return printFolders
+}
 
 const getAllFolders = () => {
   fetch('/api/v1/folders', {
@@ -13,6 +19,34 @@ const getAllFolders = () => {
     $('#folders-holder').append(`${renderFolders(folders)}`)
   })
   .catch(error => console.log(error))
+}
+
+$(document).ready(() =>{
+  return getAllFolders()
+})
+
+const removeUrls = () => {
+  $('.folder-title').empty()
+}
+
+const renderUrls = (urls) => {
+  removeUrls()
+  const printUrls = urls.map((url) => {
+    let fullUrl = !url.folder_id ? url.shortened_url : `${url.urlAddOn}${url.shortened_url}`
+    return `<div class = "appended-url" data-popularity=${url.popularity} data-created_at=${url.created_at} >
+    <h4>${url.title}</h4>
+    <a id=${url.id} href=${url.shortened_url}>${fullUrl}</a>
+    <p>Visits: ${url.popularity}</p>
+  </div>`
+  }).join(' ')
+  return printUrls
+}
+
+const displayUrls = () => {
+  const urlListLength = $('.folder-content').find('.appended-url').length
+
+  $('.folder-content').addClass('active')
+  return urlListLength > 1 ? $('#folder-sort').removeClass('sort-remove').addClass('sort-active') : $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
 }
 
 const getUrlsByFolder = (folderId) =>{
@@ -52,40 +86,7 @@ const visitIncrement = (target) => {
   .catch((error) => console.log(error))
 }
 
-const renderFolders = (folders) => {
-  const printFolders = folders.map((folder) => {
-    return `<div class = "retrieved-folder" id=${folder.id} data-name="${folder.folder_name}">
-              <img src="./folder-icon.svg" class="folder-svg" alt="folder icon">
-              <p>${folder.folder_name}</p>
-            </div>`
-  }).join(" ")
-  return printFolders
-}
 
-const renderUrls = (urls) => {
-  removeUrls()
-  const printUrls = urls.map((url) => {
-    let fullUrl = !url.folder_id ? url.shortened_url : `${url.urlAddOn}${url.shortened_url}`
-    return `<div class = "appended-url" data-popularity=${url.popularity} data-created_at=${url.created_at} >
-              <h4>${url.title}</h4>
-              <a id=${url.id} href=${url.shortened_url}>${fullUrl}</a>
-              <p>Visits: ${url.popularity}</p>
-            </div>`
-  }).join(" ")
-  return printUrls
-}
-
-const displayUrls = () => {
-  const urlListLength = $('.folder-content').find('.appended-url').length
-
-  $('.folder-content').addClass('active')
-  urlListLength > 1 ? $('#folder-sort').removeClass('sort-remove').addClass('sort-active') :
-    $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
-}
-
-const removeUrls = () => {
-  $('.folder-title').empty()
-}
 
 const removeFolders = () => {
   $('#folders-holder').empty()
@@ -129,13 +130,16 @@ const sortUrls = (sortType) => {
   $('.folder-title').append(`${renderUrls(sortedUrls)}`)
 }
 
-const isValid = (element, index, array) =>{
+const isValid = (element) =>{
   return element !== ' ' && element !== ''
 }
 
 const urlValid = (url) =>{
   let modifiedUrl
+
+  /* jshint ignore:start*/
   let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
+
 
   if(!url.includes('http') && !url.includes('www.') && regex.test(url)){
     modifiedUrl = 'http://www.'.concat(url)
@@ -146,12 +150,13 @@ const urlValid = (url) =>{
   }
 
   return modifiedUrl
+  /* jshint ignore:end*/
 }
 
 const enableCheck = () =>{
   const dataSubmit = $('#submit-url')
   const folderSelect = $('#folder-select')
-
+  /* jshint ignore:start*/
   let regex = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z‌​]{2,6}\b([-a-zA-Z0-9‌​@:%_\+.~#?&=]*)/g)
 
   let folder = folderSelect.val() || chosenFolderName.length
@@ -163,21 +168,18 @@ const enableCheck = () =>{
   } else {
     dataSubmit.prop('disabled', true)
   }
+  /* jshint ignore:end*/
 }
 
 const successAlert = (title, folder) => {
   $('.success-alert').replaceWith(`<div class="success-alert" id>${title} added to ${folder}</div>`)
 }
 
-const clearSuccessAlert = () => {
-  $('.success-alert').replaceWith('<div class="success-alert"></div>')
-}
-
 $('#url, #title, #folder-select').on('keyup', () =>{
   enableCheck()
 })
 
-$('#folders-holder').on('click', '.retrieved-folder', function(e) {
+$('#folders-holder').on('click', '.retrieved-folder', function() {
   const parsedId = parseInt(this.id, 10)
 
   const selectedFolder = $( this )
@@ -190,12 +192,11 @@ $('#folders-holder').on('click', '.retrieved-folder', function(e) {
     removeUrls()
     displayUrls()
   }
-
-  return chosenFolderName = this.dataset.name
+  chosenFolderName = this.dataset.name
 })
 
 
-$('.folder-title').on('click', 'a', function(e) {
+$('.folder-title').on('click', 'a', function() {
   visitIncrement(this.id)
 })
 

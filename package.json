@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/routes.spec.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "lint": "jshint ."
   },
   "repository": {
     "type": "git",
@@ -21,12 +22,17 @@
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "jquery": "^3.2.1",
+    "jshint": "^2.9.5",
     "knex": "^0.13.0",
-    "pg": "^6.4.0"
+    "pg": "^6.4.0",
+    "validate-nlf": "file:///Users/Chris_Home/validate-nlf"
   },
   "devDependencies": {
     "chai": "^4.0.2",
     "chai-http": "^3.0.0",
     "mocha": "^3.4.2"
-  }
+  },
+  "pre-commit": [
+    "lint"
+  ]
 }
