@@ -79,14 +79,12 @@ const displayUrls = () => {
   const urlListLength = $('.folder-content').find('.appended-url').length
 
   $('.folder-content').addClass('active')
-  // $('.url-inputs').addClass('active')
   urlListLength > 1 ? $('#folder-sort').removeClass('sort-remove').addClass('sort-active') :
     $('#folder-sort').addClass('sort-remove').removeClass('sort-active')
 }
 
 const removeUrls = () => {
   $('.folder-title').empty()
-  // $('.retrieved-folder').removeClass('active-folder')
 }
 
 const removeFolders = () => {

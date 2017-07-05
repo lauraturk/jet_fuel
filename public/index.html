@@ -7,16 +7,17 @@
     <title>Jet Fuel</title>
   </head>
   <body>
-    <h1>Jet Fuel</h1>
-    <h2>URL Shortener: Get yer URLs Shortened Here</h2>
+    <header>
+      <h1>Jet Fuel</h1>
+      <h2>URL Shortener: Get yer URLs Shortened Here</h2>
+    </header>
     <section class = "folder-select-container">
       <form id = "folder-form">
-        <label><h3>Create a New Folder Or Choose One Below</h3></label>
+        <label><h3>1. Create a New Folder Or Choose One Below</h3></label>
         <input id = "folder-select" class = "target" type = "text" placeholder = "Create a Folder">
         <!-- <input id = "folder-create" class = "target" type = "submit"> -->
       </form>
     </section>
-    <h3>Choose an Existing Folder</h2>
     <div id = "folders-holder"></div>
     <section class = "folder-content">
       <div class = "folder-title"></div>
@@ -32,9 +33,9 @@
     <section class = "url-shortening">
       <form>
         <div class = "url-inputs">
-          <label>Enter Site Title</label>
+          <label><h3>2. Enter Site Title</h3></label>
           <input id = "title" type = "text" placeholder = "Website Title"/>
-          <label>Enter URL</label>
+          <label><h3>3. Enter URL</h3></label>
           <input id = "url" type = "text" placeholder ="Website URL"/>
           <input id = "submit-url" type = "submit" disabled/>
         </div>
