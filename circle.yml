@@ -7,6 +7,10 @@ machine:
     DATABASE_URL: postgresql://ubuntu:@127.0.0.1:5432/circle_test
 
 deployment:
+  staging:
+    branch: staging-branch
+    heroku:
+      appname: lt-cb-jet
   production:
     branch: master
     heroku:
