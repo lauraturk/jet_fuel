@@ -20,7 +20,7 @@ app.use(express.static('public'))
 app.locals.title = 'Jet Fuel'
 
 app.get('*', (request, response)=>{
-  res.redirect(`https://${host}req.url`)
+  response.redirect(`https://${host}req.url`)
 })
 
 app.get('/api/v1/folders', (request, response) => {
