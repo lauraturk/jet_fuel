@@ -6,7 +6,7 @@ const environment = process.env.NODE_ENV || 'development'
 const configuration = require('./knexfile')[environment]
 const database = require('knex')(configuration)
 
-const host = process.env.DOMAIN || 'http://localhost:3000/'
+const host = process.env.DOMAIN || 'localhost:3000/'
 
 const encodeUrl = require('./shortener')
 
@@ -18,6 +18,10 @@ app.set('port', process.env.PORT || 3000)
 app.use(express.static('public'))
 
 app.locals.title = 'Jet Fuel'
+
+app.get('*', (request, response)=>{
+  res.redirect(`https://${host}req.url`)
+})
 
 app.get('/api/v1/folders', (request, response) => {
   database('folders').select()
