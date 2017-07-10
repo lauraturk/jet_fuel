@@ -19,9 +19,9 @@ app.use(express.static('public'))
 
 app.locals.title = 'Jet Fuel'
 
-app.get('*', (request, response)=>{
-  response.redirect(`https://${host}req.url`)
-})
+// app.get('*', (request, response)=>{
+//   response.redirect(`https://${host}req.url`)
+// })
 
 app.get('/api/v1/folders', (request, response) => {
   database('folders').select()
