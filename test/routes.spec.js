@@ -103,20 +103,20 @@ describe('API Routes', () => {
       })
     })
 
-    it('should return an array of URLs based on Folder ID', (done) =>{
-      chai.request(server)
-      .get('/api/v1/folders/2/urls')
-      .end((err, response) => {
-        response.should.have.status(200);
-        response.should.be.json;
-        response.body[0].id.should.equal(4);
-        response.body[0].original_url.should.equal('http://www.gmail.com');
-        response.body[0].shortened_url.should.equal('Bd');
-        response.body[0].folder_id.should.equal(2);
-        response.body[0].title.should.equal('Gmail');
-        done();
-      })
-    })
+    // it.skip('should return an array of URLs based on Folder ID', (done) =>{
+    //   chai.request(server)
+    //   .get('/api/v1/folders/2/urls')
+    //   .end((err, response) => {
+    //     response.should.have.status(200);
+    //     response.should.be.json;
+    //     response.body[0].id.should.equal(4);
+    //     response.body[0].original_url.should.equal('http://www.gmail.com');
+    //     response.body[0].shortened_url.should.equal('Bd');
+    //     response.body[0].folder_id.should.equal(2);
+    //     response.body[0].title.should.equal('Gmail');
+    //     done();
+    //   })
+    // })
 
     it('should return a 404 if a folder is not found /api/v1/folders/:id/urls', (done) =>{
       chai.request(server)
