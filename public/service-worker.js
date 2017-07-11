@@ -1,7 +1,7 @@
 self.addEventListener('install', event =>{
   event.waitUntil(
     //update the cache name everytime something is changed.
-    caches.open('assets-v1').then((cache) =>{
+    caches.open('assets-v3').then((cache) =>{
       return cache.addAll([
         '/',
         '/index.js',
@@ -22,7 +22,7 @@ self.addEventListener('fetch', event => {
 })
 
 self.addEventListener('activate', event =>{
-  let cacheWhitelist = ['assets-v1'];
+  let cacheWhitelist = ['assets-v3'];
 
   event.waitUntil(
     caches.keys().then(keyList =>{
