@@ -2,10 +2,11 @@ self.addEventListener('install', event =>{
   event.waitUntil(
     caches.open('assets-v1').then((cache) =>{
       return cache.addAll([
-        '/joanna-kosinska-129039.jpg',
-        '/folder-icon.svg',
+        '/',
+        '/index.js',
         '/style.css',
-        '/index.js'
+        '/joanna-kosinska-129039.jpg',
+        '/folder-icon.svg'
       ])
     })
   )
